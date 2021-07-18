@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ввод данных</title>
+  </head>
+  <body>
+    <h2>Ввод данных</h2>
+    <div style="display: flex">
+      <form method="GET" action="avatar">
+        <label>fontSizeInt</label><br />
+        <input
+          type="number"
+          name="fontSizeInt"
+          value="{{ .FontSizeInt}}"
+        /><br /><br />
+        <label>sizeH</label><br />
+        <input type="number" name="sizeH" value="{{ .SizeH}}" /><br /><br />
+        <label>sizeW</label><br />
+        <input type="number" name="sizeW" value="{{ .SizeW}}" /><br /><br />
+        <label>Текст</label><br />
+        <textarea cols="100" rows="20" type="text" name="initials">
+{{ .Initials}}</textarea
+        ><br /><br />
+        <input type="submit" value="Отправить" />
+      </form>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          width: 100%;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <!-- <img src="img0.png" /> -->
+        {{range .FimagNames}}
+        <img src="img/{{ . }}" />. {{end}}
+      </div>
+    </div>
+  </body>
+</html>
