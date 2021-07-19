@@ -54,7 +54,7 @@ func parseAndDrawLine(param *stParam, text string) error {
 		}
 
 		sbTmp.WriteString(word) // temp - только для измерения длинны
-		if param.canvas == nil {
+		if param.isNewCanvas {
 			param.addNextCanvas()
 		}
 		textWidh := param.drw.MeasureString(sbTmp.String())

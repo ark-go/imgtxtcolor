@@ -6,11 +6,8 @@ import (
 	"image/draw"
 	"log"
 
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -102,9 +99,9 @@ func StartOption() *stStartOptions {
 func initCanvas(opt *stStartOptions) (*stParam, error) {
 	//	bgColor := colornames.Darkslategray
 	//	fgColor := &image.Uniform{C: colornames.Yellow}
-	fontSize := float64(opt.FontSizeInt)
+	//	fontSize := float64(opt.FontSizeInt)
 	padding := stPadding{20, 20, 20, 20}
-	var fontFace *truetype.Font
+	//	var fontFace *truetype.Font
 	var err error
 	param := stParam{
 		xPositionFunc:  func(str string) fixed.Int26_6 { return fixed.I(padding.left) }, // влево,
@@ -117,18 +114,19 @@ func initCanvas(opt *stStartOptions) (*stParam, error) {
 		width:          opt.Width,
 		height:         opt.Height,
 		startOption:    opt,
+		isNewCanvas:    true,
 	}
-	fontFace, err = freetype.ParseFont(goregular.TTF)
+	//	fontFace, err = freetype.ParseFont(goregular.TTF)
 
-	param.canvas = createCanvas(&param)
-	param.drw = &font.Drawer{
-		Dst: param.canvas,
-		Src: opt.fgColor,
-		Face: truetype.NewFace(fontFace, &truetype.Options{
-			Size:    fontSize,
-			Hinting: font.HintingFull,
-		}),
-	}
+	// param.canvas = createCanvas(&param)
+	// param.drw = &font.Drawer{
+	// 	Dst: param.canvas,
+	// 	Src: opt.fgColor,
+	// 	Face: truetype.NewFace(fontFace, &truetype.Options{
+	// 		Size:    fontSize,
+	// 		Hinting: font.HintingFull,
+	// 	}),
+	// }
 	param.canvas = nil
 	param.drw = nil
 	return &param, err

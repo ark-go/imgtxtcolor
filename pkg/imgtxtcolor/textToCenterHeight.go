@@ -21,8 +21,8 @@ func textToCenterHeight(param *stParam) {
 	newCrop := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 	// или вставляем наш отрезанный
 	draw.Draw(newCrop, newCrop.Bounds(), m, b.Min, draw.Src)
-	// color, _ := getColor("yellow")
-	// draw.Draw(newCrop, newCrop.Bounds(), &image.Uniform{C: color}, image.Point{}, draw.Src)
+	//coll := newCrop.At(1, 1) // TODO  это не выход
+
 	iHeight := param.canvas.Rect.Dy()            // высота оригинала
 	iHeightTxt := textHeight - param.padding.top // высота текста без верхнего padding
 	top := (iHeight - iHeightTxt) / 2            // половина свободного места
@@ -30,11 +30,10 @@ func textToCenterHeight(param *stParam) {
 	pointSP := param.canvas.Bounds().Min.Add(image.Point{0, top * -1})
 	// теперь закрасим все, а все что надо мы уже отрезали в newCrop
 	draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: param.bgColor}, image.Point{}, draw.Src)
+	//draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: coll}, image.Point{}, draw.Src)
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
 	draw.Draw(param.canvas, param.canvas.Bounds(), newCrop, pointSP, draw.Src)
-	//!param.textHeightSumm = fixed.I(param.height) // если дальше будет текст он сам  создаст новый Image
-	//addNextCanvas(param) // новый канвас, не нужен тут , т.е. в конце всего текста появится пустой Image
-	//param.textHeightSumm = fixed.I(0)
-	param.isNewCanvas = true
+
+	param.isNewCanvas = true // новый текст в новом Image
 
 }

@@ -89,8 +89,10 @@ func commandCheck(param *stParam, str, cmd string) bool {
 		// Только в начале текста, иначе все закрасит
 		if col, ok := getColor(str); ok {
 			param.bgColor = col
-			// draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: col},
-			// 	image.Point{}, draw.Src)
+			// if param.canvas != nil {
+			// 	draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: col},
+			// 		image.Point{}, draw.Src)
+			// }
 		} else {
 			isCmd = false
 		}

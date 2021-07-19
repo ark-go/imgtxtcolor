@@ -26,13 +26,9 @@ func CreateImageText(text string, opt *stStartOptions) ([]*image.RGBA, error) {
 	if err != nil {
 		return nil, err
 	}
-	//tmpCanvas := []*image.RGBA{}                            // массив для сбора всех Canvas
-	//param.allImages = append(param.allImages, param.canvas) // сразу положим туда первую Canvas
-
 	// Выделяем строки
 	lines := strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n") //\r\n у windows
 	// Перебираем строки
-
 	for _, line := range lines { // строки
 
 		if err := parseAndDrawLine(param, strings.TrimRight(line, " ")); err != nil {
