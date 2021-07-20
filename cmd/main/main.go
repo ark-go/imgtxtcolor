@@ -48,6 +48,7 @@ func main() {
 			sizeW = 200
 		}
 		fimgNames := []string{}
+		os.MkdirAll("internal/img/", os.ModePerm)
 		avatar, err := createAvatar(sizeH, sizeW, fontSizeInt, initials)
 		if err != nil {
 			input, err := ioutil.ReadFile("internal/errormsg/error.png")

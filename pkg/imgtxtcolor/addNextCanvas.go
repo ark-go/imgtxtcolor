@@ -25,6 +25,7 @@ func (p *stParam) addNextCanvas() {
 	p.canvas = createCanvas(p)    // новая Canvas image.RGBA
 	p.drw.Dst = p.canvas          // подключим ее
 	p.textHeightSumm = fixed.I(0) // сбросим курсор на 0 на первую строку сверху
+	p.textWidthSumm = fixed.I(0)
 	// сразу сохраним Canvas в массиве
 	p.allImages = append(p.allImages, p.canvas)
 	p.isNewCanvas = false

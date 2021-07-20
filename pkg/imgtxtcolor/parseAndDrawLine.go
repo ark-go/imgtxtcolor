@@ -24,19 +24,19 @@ func parseAndDrawLine(param *stParam, text string) error {
 
 	//var tmpHeight fixed.Int26_6
 	isCmd := false
-	isPageBreak := false
+	//isPageBreak := false
 	for word := range c {
 
 		// проверка на команду
 		if str, cmd := commandGet(word); cmd != "" { // команду пропускаем
-			if isPageBreak = commandCheckBreak(param, str, cmd); isPageBreak {
-				// только если распознали команду прерываем
-				//	param.addNextCanvas() // новая канва
-				//param.textHeightSumm = fixed.I(0)
-				param.isNewCanvas = true
-				isCmd = true
-				continue
-			}
+			// if isPageBreak = commandCheckBreak(param, str, cmd); isPageBreak {
+			// 	// только если распознали команду прерываем
+			// 	//	param.addNextCanvas() // новая канва
+			// 	//param.textHeightSumm = fixed.I(0)
+			// 	param.isNewCanvas = true
+			// 	isCmd = true
+			// 	continue
+			// }
 			if isCmd = commandCheck(param, str, cmd); isCmd {
 				// только если распознали команду пропускаем и не печатаем слово
 				continue
@@ -52,26 +52,34 @@ func parseAndDrawLine(param *stParam, text string) error {
 			isCmd = false //  снимаем флаг и  разрешаем печатать слово
 
 		}
+		test := 1
+		if test == 1 {
+			sbTmp.WriteString(word) // temp - только для измерения длинны
+			if param.isNewCanvas {
+				param.addNextCanvas()
+			}
+			// определим куда перепестится курсор
+			textWidh := param.drw.MeasureString(sbTmp.String())
 
-		sbTmp.WriteString(word) // temp - только для измерения длинны
-		if param.isNewCanvas {
-			param.addNextCanvas()
-		}
-		textWidh := param.drw.MeasureString(sbTmp.String())
-		// если вылезает новая временная строка, то пишем предыдущую
-		if textWidh.Ceil() > (param.canvas.Rect.Dx() - param.padding.lenW()) {
-			sbStr := strings.TrimRight(sb.String(), " ")
+			// если вылезает новая временная строка, то пишем предыдущую
+			if textWidh.Ceil() > (param.canvas.Rect.Dx() - param.padding.lenW()) {
+				sbStr := strings.TrimRight(sb.String(), " ")
 
-			if Ok := drawLine(param, sbStr); !Ok {
+				if Ok := drawLine(param, sbStr); !Ok {
+					return errors.New("нет места по вертикали на новой канве")
+				}
+				sb.Reset()
+				sbTmp.Reset()
+				sbTmp.WriteString(word) // слово которое не влезло вставляем вначало для TMP
+				sb.WriteString(word)    // ну и начинаем новый набор с пропущеного слова
+				continue
+			}
+		} else if test == 2 {
+
+			if Ok := drawLine2(param, word); !Ok {
 				return errors.New("нет места по вертикали на новой канве")
 			}
-			sb.Reset()
-			sbTmp.Reset()
-			sbTmp.WriteString(word) // слово которое не влезло вставляем вначало для TMP
-			sb.WriteString(word)    // ну и начинаем новый набор с пропущеного слова
-			continue
 		}
-
 		sb.WriteString(word)
 	}
 

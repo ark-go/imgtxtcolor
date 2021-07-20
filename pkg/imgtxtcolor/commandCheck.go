@@ -6,7 +6,11 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 
 	"golang.org/x/image/math/fixed"
 )
@@ -15,21 +19,26 @@ func commandCheck(param *stParam, str, cmd string) bool {
 	isCmd := true
 	// str = strings.ToLower(str)  color,,???
 	switch cmd {
-	case "size":
+	case "fontSize", "size":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.startOption.FontSizeInt = siz
-			// fontFace, _ := freetype.ParseFont(goregular.TTF)
-			// param.drw.Face = truetype.NewFace(fontFace, &truetype.Options{
-			// 	Size:    float64(siz),
-			// 	Hinting: font.HintingFull,
-			// })
+			if param.canvas != nil {
+				fontFace, _ := freetype.ParseFont(goregular.TTF)
+				param.drw.Face = truetype.NewFace(fontFace, &truetype.Options{
+					Size:    float64(siz),
+					Hinting: font.HintingFull,
+				})
+			}
 		}
 		// fallthrough // Переходит на следующий иначе break
-	case "color":
+	case "fontColor", "color":
 		//if col, ok := colornames.Map[str]; ok {
 		if col, ok := getColor(str); ok {
 			//param.drw.Src = &image.Uniform{C: col}
 			param.startOption.fgColor = &image.Uniform{C: col}
+			// if param.canvas != nil {
+			// 	param.drw.Src = param.startOption.fgColor
+			// }
 		} else {
 			isCmd = false
 		}
@@ -54,32 +63,25 @@ func commandCheck(param *stParam, str, cmd string) bool {
 			} // вправо
 		}
 
-	case "left":
-		if siz, err := strconv.Atoi(str); err == nil {
-			param.padding.left = siz
-		}
-
-	case "right":
-		if siz, err := strconv.Atoi(str); err == nil {
-			param.padding.right = siz
-		}
-
-	case "top":
-		if siz, err := strconv.Atoi(str); err == nil {
-			param.padding.top = siz
-		}
-
-	case "bottom":
-		if siz, err := strconv.Atoi(str); err == nil {
-			param.padding.bottom = siz
-		}
 	case "padding":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.setAll(siz)
 		}
-	case "paddingtop":
+	case "paddingTop", "top":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.top = siz
+		}
+	case "paddingLeft", "left":
+		if siz, err := strconv.Atoi(str); err == nil {
+			param.padding.left = siz
+		}
+	case "paddingRigh", "right":
+		if siz, err := strconv.Atoi(str); err == nil {
+			param.padding.right = siz
+		}
+	case "paddingBottom", "bottom":
+		if siz, err := strconv.Atoi(str); err == nil {
+			param.padding.bottom = siz
 		}
 	case "lineSpacing", "linespacing":
 		if siz, err := strconv.Atoi(str); err == nil {
@@ -116,10 +118,14 @@ func commandCheck(param *stParam, str, cmd string) bool {
 			param.isNewCanvas = true
 			//param.addNextCanvas() // новая ка
 		}
-	case "position":
+
+	case "break", "position":
 		switch strings.ToLower(str) {
+		case "top":
 		case "center":
 			textToCenterHeight(param)
+		case "bottom":
+			textToBottomHeight(param)
 		}
 	default:
 		isCmd = false // не засчитали команду

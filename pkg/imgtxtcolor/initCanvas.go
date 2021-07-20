@@ -51,7 +51,9 @@ type stParam struct {
 	// динамическая текущая функция для выравнивания текста, изменяется в зависимости от параметров
 	xPositionFunc func(str string) fixed.Int26_6
 	// базовая линия для рисования текста, Descent рисует ниже
-	textHeightSumm fixed.Int26_6
+	textHeightSumm fixed.Int26_6 // для хранения высоты "курсора"
+	textWidthSumm  fixed.Int26_6 // TODO
+	textHeightTmp  fixed.Int26_6 // для расчета высоты строки
 	// межстрочное расстояние default: 2
 	lineSpacing fixed.Int26_6
 	// Цвет background
@@ -108,6 +110,8 @@ func initCanvas(opt *stStartOptions) (*stParam, error) {
 		padding:        &padding,
 		border:         stBorder{false, 10, 10, 10, 10},
 		textHeightSumm: fixed.I(0),
+		textWidthSumm:  fixed.I(0),
+		textHeightTmp:  fixed.I(0),
 		lineSpacing:    fixed.I(2),
 		bgColor:        colornames.Darkslategray,
 		allImages:      []*image.RGBA{},
