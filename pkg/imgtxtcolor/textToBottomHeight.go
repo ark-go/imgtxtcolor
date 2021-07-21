@@ -28,6 +28,7 @@ func textToBottomHeight(param *stParam) {
 	// точка для совмещения нашего отрезанного куска с основным изображением
 	pointSP := param.canvas.Bounds().Min.Add(image.Point{0, top * -1})
 	// теперь закрасим все, а все что надо мы уже отрезали в newCrop
+
 	draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: param.bgColor}, image.Point{}, draw.Src)
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
 	draw.Draw(param.canvas, param.canvas.Bounds(), newCrop, pointSP, draw.Src)

@@ -3,9 +3,9 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
-	"image/draw"
 	"log"
 
+	"github.com/fogleman/gg"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
@@ -137,13 +137,18 @@ func initCanvas(opt *stStartOptions) (*stParam, error) {
 }
 func createCanvas(param *stParam) *image.RGBA {
 	canvas := image.NewRGBA(image.Rect(0, 0, param.width, param.height))
-	draw.Draw(canvas, canvas.Bounds(), &image.Uniform{C: param.bgColor},
-		image.Point{}, draw.Src)
-	//param.drw.Dst = param.canvas
-	// newR := image.Rect(30, 30, width-30, height-30)
-	// draw.Draw(canvas, newR, &image.Uniform{C: colornames.Red},
+
+	// draw.Draw(canvas, canvas.Bounds(), &image.Uniform{C: param.bgColor},
 	// 	image.Point{}, draw.Src)
+
 	return canvas
+}
+func canvasSetBackground(param *stParam) {
+	ctx := gg.NewContextForRGBA(param.canvas)
+
+	ctx.DrawRoundedRectangle(0, 0, float64(param.width), float64(param.height), float64(param.padding.top))
+	ctx.SetColor(param.bgColor)
+	ctx.Fill()
 }
 
 /*

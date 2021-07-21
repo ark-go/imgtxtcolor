@@ -22,7 +22,7 @@ func CreateImageText(text string, opt *stStartOptions) ([]*image.RGBA, error) {
 	// maximize CPU usage for maximum performance
 	// runtime.GOMAXPROCS(runtime.NumCPU())
 	defer duration(track("Все"))  // меряем время
-	param, err := initCanvas(opt) // инициализация первого Canvas
+	param, err := initCanvas(opt) // инициализация параметров
 	if err != nil {
 		return nil, err
 	}
