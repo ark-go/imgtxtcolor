@@ -12,7 +12,8 @@ func textToBottomHeight(param *stParam) {
 		return
 	}
 	textHeight := param.textHeightSumm.Ceil() + param.padding.top + param.drw.Face.Metrics().Descent.Ceil() // + param.drw.Face.Metrics().Descent.Ceil() // текущая линия,                   //
-	m := param.canvas.SubImage(image.Rect(0, param.padding.top, param.width, textHeight))                   //.(*image.RGBA)
+	//m := param.canvas.SubImage(image.Rect(0, param.padding.top, param.opt.Width, textHeight))                   //.(*image.RGBA)
+	m := param.canvas.SubImage(image.Rect(param.padding.left, param.padding.top, param.opt.Width-param.padding.right, textHeight))
 
 	// перевод его в новый RGB  чтоб закрасить старый и наложить обратно   // TODO почему image.image не так рисуется как image.RGBA
 	// размеры отрезанного куска
@@ -26,15 +27,13 @@ func textToBottomHeight(param *stParam) {
 	iHeightTxt := textHeight - param.padding.top         // нижняя граница текста минус top padding
 	top := (iHeight - iHeightTxt) - param.padding.bottom // все свободное место минус padding-bottom
 	// точка для совмещения нашего отрезанного куска с основным изображением
-	pointSP := param.canvas.Bounds().Min.Add(image.Point{0, top * -1})
+	pointSP := param.canvas.Bounds().Min.Add(image.Point{param.padding.left * -1, top * -1})
 	// теперь закрасим все, а все что надо мы уже отрезали в newCrop
-
-	draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: param.bgColor}, image.Point{}, draw.Src)
+	canvasSetBackground(param)
+	//draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: param.opt.BgColor}, image.Point{}, draw.Src)
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
 	draw.Draw(param.canvas, param.canvas.Bounds(), newCrop, pointSP, draw.Src)
-	//!param.textHeightSumm = fixed.I(param.height) // если дальше будет текст он сам  создаст новый Image
-	//addNextCanvas(param) // новый канвас, не нужен тут , т.е. в конце всего текста появится пустой Image
-	//param.textHeightSumm = fixed.I(0)
-	param.isNewCanvas = true
+
+	param.isNewCanvas = true // сообщаем - требуется новый Canvas
 
 }

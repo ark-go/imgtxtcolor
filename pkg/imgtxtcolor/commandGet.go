@@ -15,7 +15,7 @@ func commandGet(word string) (str string, cmd string) {
 		if f[0] == "" || f[1] == "" {
 			return word, ""
 		}
-		// TODO Проверку на команду сюда
+		// TODO Проверку на команду сюда?
 		return f[1], f[0]
 	}
 	return word, "" // этого не может быть

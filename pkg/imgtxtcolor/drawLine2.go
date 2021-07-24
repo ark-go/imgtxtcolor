@@ -1,11 +1,6 @@
 package imgtxtcolor
 
-import (
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
-)
+import ()
 
 func drawLine2(param *stParam, word string) bool {
 	// новый Image если еще нет или требуют новый
@@ -14,13 +9,6 @@ func drawLine2(param *stParam, word string) bool {
 			param.addNextCanvas()
 		}
 	}
-	// устанавливаем Шрифт
-	fontFace, _ := freetype.ParseFont(goregular.TTF)
-	// устанавливаемм размер шрифта
-	param.drw.Face = truetype.NewFace(fontFace, &truetype.Options{
-		Size:    float64(param.startOption.FontSizeInt),
-		Hinting: font.HintingFull,
-	})
 	// вычислим на сколько продвинется "курсор" по горизонтали
 	param.textWidthSumm += param.drw.MeasureString(word)
 	// выясним меняется ли высота в строке

@@ -17,6 +17,7 @@
 - paddingLeft, left
 - paddingRigh, right
 - paddingBottom, bottom
+- round
 - bgColor, bgcolor
 - width
 - height
@@ -28,5 +29,5 @@
   - center
   - bottom
 
-rr  
+time:now - вставит время  
 rr

@@ -3,14 +3,11 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
+	"log"
 	"strconv"
 	"strings"
 
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 
 	"golang.org/x/image/math/fixed"
 )
@@ -21,23 +18,19 @@ func commandCheck(param *stParam, str, cmd string) bool {
 	switch cmd {
 	case "fontSize", "size":
 		if siz, err := strconv.Atoi(str); err == nil {
-			param.startOption.FontSizeInt = siz
-			if param.canvas != nil {
-				fontFace, _ := freetype.ParseFont(goregular.TTF)
-				param.drw.Face = truetype.NewFace(fontFace, &truetype.Options{
-					Size:    float64(siz),
-					Hinting: font.HintingFull,
-				})
-			}
+			param.setFontSize(siz)
+
+		} else {
+			isCmd = false
 		}
 		// fallthrough // Переходит на следующий иначе break
 	case "fontColor", "color":
 		//if col, ok := colornames.Map[str]; ok {
 		if col, ok := getColor(str); ok {
 			//param.drw.Src = &image.Uniform{C: col}
-			param.startOption.fgColor = &image.Uniform{C: col}
+			param.opt.FgColor = &image.Uniform{C: col}
 			// if param.canvas != nil {
-			// 	param.drw.Src = param.startOption.fgColor
+			// 	param.drw.Src = param.opt.FgColor
 			// }
 		} else {
 			isCmd = false
@@ -61,36 +54,58 @@ func commandCheck(param *stParam, str, cmd string) bool {
 			param.xPositionFunc = func(str string) fixed.Int26_6 {
 				return (fixed.I(param.canvas.Rect.Dx()) - param.drw.MeasureString(str) - fixed.I(param.padding.right))
 			} // вправо
+		default:
+			isCmd = false // не засчитали команду
 		}
 
 	case "padding":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.setAll(siz)
+		} else {
+			isCmd = false
 		}
 	case "paddingTop", "top":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.top = siz
+		} else {
+			isCmd = false
 		}
 	case "paddingLeft", "left":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.left = siz
+		} else {
+			isCmd = false
 		}
 	case "paddingRigh", "right":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.padding.right = siz
+		} else {
+			isCmd = false
 		}
 	case "paddingBottom", "bottom":
-		if siz, err := strconv.Atoi(str); err == nil {
+		if siz, err := strconv.Atoi(str); err == nil && siz >= 0 {
 			param.padding.bottom = siz
+		} else {
+			isCmd = false
+		}
+	case "round":
+		if siz, err := strconv.Atoi(str); err == nil && siz >= 0 {
+			param.round = float64(siz)
+		} else {
+			if param.padding.top > 0 {
+				param.round = float64(param.padding.top)
+			}
 		}
 	case "lineSpacing", "linespacing":
 		if siz, err := strconv.Atoi(str); err == nil {
 			param.lineSpacing = fixed.I(siz)
+		} else {
+			isCmd = false
 		}
 	case "bgColor", "bgcolor":
 		// Только в начале текста, иначе все закрасит
 		if col, ok := getColor(str); ok {
-			param.bgColor = col
+			param.opt.BgColor = col
 			// if param.canvas != nil {
 			// 	draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: col},
 			// 		image.Point{}, draw.Src)
@@ -100,13 +115,10 @@ func commandCheck(param *stParam, str, cmd string) bool {
 		}
 	case "width":
 		if siz, err := strconv.Atoi(str); err == nil {
-			// замена Canvas
-			// if len(param.allImages) > 0 {
-			// 	param.allImages = param.allImages[:len(param.allImages)-1]
-			// }
-			param.width = siz
+			param.opt.Width = siz
 			param.isNewCanvas = true
-			//param.addNextCanvas() // новая канва
+		} else {
+			isCmd = false
 		}
 	case "height":
 		if siz, err := strconv.Atoi(str); err == nil {
@@ -114,11 +126,20 @@ func commandCheck(param *stParam, str, cmd string) bool {
 			if len(param.allImages) > 0 {
 				param.allImages = param.allImages[:len(param.allImages)-1]
 			}
-			param.height = siz
+			param.opt.Height = siz
 			param.isNewCanvas = true
-			//param.addNextCanvas() // новая ка
+		} else {
+			isCmd = false
 		}
+	case "rect":
+		if str == "tg" {
+			width, height := getRectToTelegram(float64(param.opt.Width), float64(param.opt.Height))
+			param.opt.Width, param.opt.Height = int(width), int(height)
+			log.Println(width, height)
 
+		} else {
+			isCmd = false
+		}
 	case "break", "position":
 		switch strings.ToLower(str) {
 		case "top":
@@ -126,6 +147,8 @@ func commandCheck(param *stParam, str, cmd string) bool {
 			textToCenterHeight(param)
 		case "bottom":
 			textToBottomHeight(param)
+		default:
+			isCmd = false // не засчитали команду
 		}
 	default:
 		isCmd = false // не засчитали команду

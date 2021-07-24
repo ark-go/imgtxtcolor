@@ -1,43 +1,32 @@
 package imgtxtcolor
 
 import (
-	"github.com/golang/freetype"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font"
-	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
-func drawLine(param *stParam, text string) bool {
+func (p *stParam) drawLine(text string) bool {
 
-	if param.canvas == nil || param.isNewCanvas {
-		if len(text) > 0 || param.canvas == nil {
-			param.addNextCanvas()
+	if p.canvas == nil || p.isNewCanvas { // nil такой ситуации не должно быть
+		if len(text) > 0 || p.canvas == nil {
+			p.addNextCanvas()
 		}
 	}
 
-	fontFace, _ := freetype.ParseFont(goregular.TTF)
-	param.drw.Face = truetype.NewFace(fontFace, &truetype.Options{
-		Size:    float64(param.startOption.FontSizeInt),
-		Hinting: font.HintingFull,
-	})
-
-	param.drw.Src = param.startOption.fgColor
-	if ok := checkHeight(param, text); !ok {
+	p.drw.Src = p.opt.FgColor
+	if ok := checkHeight(p, text); !ok { // у нас перебор по высоте
 		if len(text) > 0 {
-			param.addNextCanvas()
-			if ok := checkHeight(param, text); !ok {
+			p.addNextCanvas()                    // добавим еще Canvas
+			if ok := checkHeight(p, text); !ok { // и снова перебор, говорим об ошибке
 				return false // нет места для строк
 			}
-			//			log.Println("height text", param.textHeightSumm.Ceil(), text)
 		} else {
-			// у нас перебор, но не влезает пустая строка, нечего печатать
+			// у нас перебор, но не влезает только пустая строка, нечего ее и печатать
 			return true
 		}
 	}
 
 	//log.Println("draw:", param.drw.Dot.Y)
-	param.drw.DrawString(text)
+	p.drw.DrawString(text)
 	return true
 }
 func checkHeight(param *stParam, text string) bool {

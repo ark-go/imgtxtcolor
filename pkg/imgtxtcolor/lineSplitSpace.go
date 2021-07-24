@@ -21,11 +21,3 @@ func lineSplitSpace(line string, def string, c chan string) {
 	}
 	close(c)
 }
-
-/*
-c := make(chan string)
-	go lineSplitSpace("1 234  567890", "+", c)
-	for v := range c {
-		fmt.Printf("%s\n", v)
-	}
-*/

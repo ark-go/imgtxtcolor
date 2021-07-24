@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"html/template"
 	"image"
 	"io/ioutil"
@@ -53,13 +52,13 @@ func main() {
 		if err != nil {
 			input, err := ioutil.ReadFile("internal/errormsg/error.png")
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 
 			err = ioutil.WriteFile("internal/img/error.png", input, 0644)
 			if err != nil {
-				fmt.Println("Error creating", err.Error())
+				log.Println("Error creating", err.Error())
 				return
 			}
 			fimgNames = append(fimgNames, "error.png")
@@ -67,7 +66,7 @@ func main() {
 
 			for i, img := range avatar {
 				_ = img
-				name := "img" + fmt.Sprintf("%d", i) + ".png"
+				name := "img" + strconv.Itoa(i) + ".png"
 				f, err := os.Create("internal/img/" + name)
 				if err != nil {
 					panic(err)
@@ -110,11 +109,14 @@ func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, er
 	opt.Height = sizeH
 	opt.FontSizeInt = fontSizeInt
 
-	canvasArr, err := imgtxtcolor.CreateImageText(text, opt)
+	canvasArr, err := imgtxtcolor.CreateImageTextLog(text, opt, imgtxtcolor.LogFileAndConsole)
+
 	if err != nil {
 		return nil, err
 	}
 	//	dd = imgtxtcolor.GetBase64(canvasArr[0])
 	log.Println("Всего картинок:", len(canvasArr))
+	//log.Println(language.Base)
+
 	return canvasArr, nil
 }

@@ -6,8 +6,11 @@ import (
 	"log"
 
 	"github.com/fogleman/gg"
+	"github.com/golang/freetype"
+	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
 
@@ -41,11 +44,10 @@ type stParam struct {
 	// текуший Image
 	canvas *image.RGBA
 	// структура top,bottom,left,right
-	padding *stPadding
-	// ширина Image
-	width int
-	// Высота Image
-	height int
+	padding     *stPadding
+	currentFont *truetype.Font
+	// скругленные углы
+	round float64
 	// Не реализовано // TODO
 	border stBorder
 	// динамическая текущая функция для выравнивания текста, изменяется в зависимости от параметров
@@ -56,12 +58,10 @@ type stParam struct {
 	textHeightTmp  fixed.Int26_6 // для расчета высоты строки
 	// межстрочное расстояние default: 2
 	lineSpacing fixed.Int26_6
-	// Цвет background
-	bgColor color.RGBA
 	// массив нарисованных Image
 	allImages []*image.RGBA
 	// временно
-	startOption *stStartOptions
+	opt *stStartOptions
 	// сигнал о том что следущий вывод требует нового Image
 	isNewCanvas bool
 }
@@ -78,6 +78,19 @@ func (p *stParam) getHeight() fixed.Int26_6 {
 	//return metric.Ascent + metric.Descent + p.lineSpacing // fixed.I(2) // рекомендуемое  metric.Height
 }
 
+func (p *stParam) setFontSize(size int) {
+	if size < 1 {
+		size = 20
+	}
+	p.opt.FontSizeInt = size // сохраним выбор
+	if p.canvas != nil {     // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
+		p.drw.Face = truetype.NewFace(p.currentFont, &truetype.Options{
+			Size:    float64(size),
+			Hinting: font.HintingFull,
+		})
+	}
+}
+
 // Начальные установки по умолчанию
 type stStartOptions struct {
 	// Ширина
@@ -86,7 +99,10 @@ type stStartOptions struct {
 	Height int
 	// Размер шрифта
 	FontSizeInt int
-	fgColor     *image.Uniform
+	// цвет шрифта
+	FgColor     *image.Uniform
+	// цвет фона
+	BgColor     color.RGBA
 }
 
 // Начальные установки по умолчанию
@@ -95,15 +111,12 @@ func StartOption() *stStartOptions {
 		Width:       500,
 		Height:      350,
 		FontSizeInt: 20,
-		fgColor:     &image.Uniform{C: colornames.Yellow},
+		FgColor:     &image.Uniform{C: colornames.Yellow},
+		BgColor:     colornames.Darkslategray,
 	}
 }
-func initCanvas(opt *stStartOptions) (*stParam, error) {
-	//	bgColor := colornames.Darkslategray
-	//	fgColor := &image.Uniform{C: colornames.Yellow}
-	//	fontSize := float64(opt.FontSizeInt)
+func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	padding := stPadding{20, 20, 20, 20}
-	//	var fontFace *truetype.Font
 	var err error
 	param := stParam{
 		xPositionFunc:  func(str string) fixed.Int26_6 { return fixed.I(padding.left) }, // влево,
@@ -113,46 +126,38 @@ func initCanvas(opt *stStartOptions) (*stParam, error) {
 		textWidthSumm:  fixed.I(0),
 		textHeightTmp:  fixed.I(0),
 		lineSpacing:    fixed.I(2),
-		bgColor:        colornames.Darkslategray,
-		allImages:      []*image.RGBA{},
-		width:          opt.Width,
-		height:         opt.Height,
-		startOption:    opt,
-		isNewCanvas:    true,
+		//	bgColor:        colornames.Darkslategray,
+		allImages: []*image.RGBA{},
+		//width:          startOption.Width,
+		//height:      startOption.Height,
+		opt:         startOption,
+		isNewCanvas: true,
 	}
-	//	fontFace, err = freetype.ParseFont(goregular.TTF)
 
-	// param.canvas = createCanvas(&param)
-	// param.drw = &font.Drawer{
-	// 	Dst: param.canvas,
-	// 	Src: opt.fgColor,
-	// 	Face: truetype.NewFace(fontFace, &truetype.Options{
-	// 		Size:    fontSize,
-	// 		Hinting: font.HintingFull,
-	// 	}),
-	// }
+	setCurrentFont(&param, nil)
+
 	param.canvas = nil
 	param.drw = nil
 	return &param, err
 }
-func createCanvas(param *stParam) *image.RGBA {
-	canvas := image.NewRGBA(image.Rect(0, 0, param.width, param.height))
 
-	// draw.Draw(canvas, canvas.Bounds(), &image.Uniform{C: param.bgColor},
-	// 	image.Point{}, draw.Src)
-
-	return canvas
-}
 func canvasSetBackground(param *stParam) {
 	ctx := gg.NewContextForRGBA(param.canvas)
 
-	ctx.DrawRoundedRectangle(0, 0, float64(param.width), float64(param.height), float64(param.padding.top))
-	ctx.SetColor(param.bgColor)
+	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.round))
+	ctx.SetColor(param.opt.BgColor)
 	ctx.Fill()
 }
-
-/*
-for i, r := range []rune(s) {
-    fmt.Printf("%d: %q\n", i, r)
+// Установка Font (goregular.TTF)   
+// 	font установить в nil  // TODO сделать возможность выбора шрифта
+func setCurrentFont(param *stParam, font []byte) {
+	if font == nil {
+		font = goregular.TTF
+	}
+	if fontFace, err := freetype.ParseFont(font); err == nil {
+		param.currentFont = fontFace
+	} else {
+		log.Println("Ошибка при загрузке шрифта")
+		param.currentFont = nil
+	}
 }
-*/
