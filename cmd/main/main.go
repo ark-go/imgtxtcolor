@@ -12,7 +12,7 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/ark-go/canvas/pkg/imgtxtcolor"
+	"github.com/ark-go/imgtxtcolor/pkg/imgtxtcolor"
 	"github.com/go-chi/chi"
 	_ "github.com/go-chi/chi/middleware"
 )

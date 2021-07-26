@@ -1,4 +1,4 @@
-module github.com/ark-go/canvas
+module github.com/ark-go/imgtxtcolor
 
 go 1.16
 
