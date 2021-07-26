@@ -100,9 +100,9 @@ type stStartOptions struct {
 	// Размер шрифта
 	FontSizeInt int
 	// цвет шрифта
-	FgColor     *image.Uniform
+	FgColor *image.Uniform
 	// цвет фона
-	BgColor     color.RGBA
+	BgColor color.RGBA
 }
 
 // Начальные установки по умолчанию
@@ -116,6 +116,9 @@ func StartOption() *stStartOptions {
 	}
 }
 func initCanvas(startOption *stStartOptions) (*stParam, error) {
+	if startOption == nil {
+		startOption = StartOption()
+	}
 	padding := stPadding{20, 20, 20, 20}
 	var err error
 	param := stParam{
@@ -148,7 +151,8 @@ func canvasSetBackground(param *stParam) {
 	ctx.SetColor(param.opt.BgColor)
 	ctx.Fill()
 }
-// Установка Font (goregular.TTF)   
+
+// Установка Font (goregular.TTF)
 // 	font установить в nil  // TODO сделать возможность выбора шрифта
 func setCurrentFont(param *stParam, font []byte) {
 	if font == nil {
