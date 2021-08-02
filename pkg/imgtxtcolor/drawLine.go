@@ -15,6 +15,7 @@ func (p *stParam) drawLine(text string) bool {
 	p.drw.Src = p.opt.FgColor
 	if ok := checkHeight(p, text); !ok { // у нас перебор по высоте
 		if len(text) > 0 {
+			p.textToHeight()
 			p.addNextCanvas()                    // добавим еще Canvas
 			if ok := checkHeight(p, text); !ok { // и снова перебор, говорим об ошибке
 				return false // нет места для строк
@@ -23,6 +24,7 @@ func (p *stParam) drawLine(text string) bool {
 			// у нас перебор, но не влезает только пустая строка, нечего ее и печатать
 			return true
 		}
+
 	}
 
 	//log.Println("draw:", param.drw.Dot.Y)
@@ -36,6 +38,7 @@ func checkHeight(param *stParam, text string) bool {
 	yPosition := fixed.I(param.padding.top)
 	yPosition += param.textHeightSumm
 	if yPosition.Ceil()+metric.Descent.Ceil()+param.padding.bottom > param.canvas.Rect.Dy() {
+		param.textHeightSumm -= param.getHeight() //01-08
 		return false
 	}
 	param.drw.Dot.Y = yPosition // двигаем вниз

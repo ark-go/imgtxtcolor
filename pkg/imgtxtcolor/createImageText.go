@@ -4,7 +4,6 @@ import (
 	"image"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -49,7 +48,7 @@ func startLogFile(logt logtype) (*os.File, error) {
 	}
 	wrt := io.MultiWriter(wr...)
 	log.SetOutput(wrt)
-	log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
+	// log.SetFlags(log.Ldate | log.Ltime | log.Lshortfile)
 	//logger := log.New(f, "префикс: ", log.LstdFlags)
 	//log.SetOutput(ioutil.Discard) //- отключить вывод
 	return f, err
@@ -84,6 +83,10 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*imag
 			log.Println(err.Error())
 			return nil, err
 		}
+	}
+	param.textToHeight()
+	if param.opt.GifFileName != "" {
+		ToGif(param, param.opt.GifFileName)
 	}
 	return param.allImages, err
 }

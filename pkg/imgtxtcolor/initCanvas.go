@@ -3,7 +3,6 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
-	"log"
 
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype"
@@ -60,6 +59,7 @@ type stParam struct {
 	lineSpacing fixed.Int26_6
 	// массив нарисованных Image
 	allImages []*image.RGBA
+	palette   map[color.RGBA]bool
 	// временно
 	opt *stStartOptions
 	// сигнал о том что следущий вывод требует нового Image
@@ -103,6 +103,12 @@ type stStartOptions struct {
 	FgColor *image.Uniform
 	// цвет фона
 	BgColor color.RGBA
+	// по высоте
+	AlignHeight string
+	// gif - file name
+	GifFileName string
+	// gif delay
+	GifDelay int // 1/100 sec
 }
 
 // Начальные установки по умолчанию
@@ -113,6 +119,9 @@ func StartOption() *stStartOptions {
 		FontSizeInt: 20,
 		FgColor:     &image.Uniform{C: colornames.Yellow},
 		BgColor:     colornames.Darkslategray,
+		AlignHeight: "center",
+		GifFileName: "",
+		GifDelay:    100 * 4,
 	}
 }
 func initCanvas(startOption *stStartOptions) (*stParam, error) {
@@ -131,6 +140,7 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 		lineSpacing:    fixed.I(2),
 		//	bgColor:        colornames.Darkslategray,
 		allImages: []*image.RGBA{},
+		palette:   make(map[color.RGBA]bool),
 		//width:          startOption.Width,
 		//height:      startOption.Height,
 		opt:         startOption,

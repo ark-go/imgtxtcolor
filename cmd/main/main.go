@@ -4,10 +4,10 @@ import (
 	"html/template"
 	"image"
 	"io/ioutil"
+	"log"
 	"path"
 
 	"image/png"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -108,6 +108,8 @@ func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, er
 	opt.Width = sizeW
 	opt.Height = sizeH
 	opt.FontSizeInt = fontSizeInt
+	opt.GifFileName = "internal/img/test.gif"
+	opt.GifDelay = 100 * 1
 
 	canvasArr, err := imgtxtcolor.CreateImageTextLog(text, opt, imgtxtcolor.LogFileAndConsole)
 
@@ -117,6 +119,7 @@ func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, er
 	//	dd = imgtxtcolor.GetBase64(canvasArr[0])
 	log.Println("Всего картинок:", len(canvasArr))
 	//log.Println(language.Base)
+	//	imgtxtcolor.ToGif(canvasArr)
 
 	return canvasArr, nil
 }

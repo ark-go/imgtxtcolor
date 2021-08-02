@@ -3,7 +3,6 @@ package imgtxtcolor
 import (
 	"image"
 	"image/draw"
-	"log"
 )
 
 func textToCenterHeight(param *stParam) {
