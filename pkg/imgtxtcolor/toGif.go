@@ -16,18 +16,6 @@ func ToGif(param *stParam, fileName string) {
 	var images []*image.Paletted
 	var delays []int
 	var disposals []byte
-	//	var col color.RGBA
-
-	// var palette1 color.Palette = color.Palette{
-	// 	image.Transparent,
-	// 	image.Black,
-	// 	image.White,
-	// }
-
-	// for key, _ := range param.palette {
-	// 	palette1 = append(palette1, key)
-	// }
-
 	dc := gg.NewContext(width, height)
 
 	for i := 0; i < len(param.allImages); i++ {
@@ -35,8 +23,6 @@ func ToGif(param *stParam, fileName string) {
 		dc.Clear()
 
 		img := param.allImages[i]
-
-		//img.SubImage()
 
 		var palette2 color.Palette = palette.Plan9 // TODO 256 цветов https://pkg.go.dev/image/color/palette@go1.16.6
 		bounds := img.Bounds()
@@ -48,11 +34,6 @@ func ToGif(param *stParam, fileName string) {
 		images = append(images, dst)
 		delays = append(delays, param.opt.GifDelay)
 		disposals = append(disposals, gif.DisposalBackground)
-
-		// var opt gif.Options
-		// opt.NumColors = 256
-
-		// gif.Encode(out, img, &opt)
 	}
 
 	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0600)
