@@ -3,6 +3,7 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
+	"image/color/palette"
 	"image/draw"
 	"image/gif"
 	"os"
@@ -17,15 +18,15 @@ func ToGif(param *stParam, fileName string) {
 	var disposals []byte
 	//	var col color.RGBA
 
-	var palette color.Palette = color.Palette{
-		image.Transparent,
-		image.Black,
-		image.White,
-	}
+	// var palette1 color.Palette = color.Palette{
+	// 	image.Transparent,
+	// 	image.Black,
+	// 	image.White,
+	// }
 
-	for key, _ := range param.palette {
-		palette = append(palette, key)
-	}
+	// for key, _ := range param.palette {
+	// 	palette1 = append(palette1, key)
+	// }
 
 	dc := gg.NewContext(width, height)
 
@@ -37,20 +38,19 @@ func ToGif(param *stParam, fileName string) {
 
 		//img.SubImage()
 
-		// var Qw draw.Quantizer
-		// pl := Qw.Quantize(palette, img)
-
+		var palette2 color.Palette = palette.Plan9 // TODO 256 цветов https://pkg.go.dev/image/color/palette@go1.16.6
 		bounds := img.Bounds()
 
-		dst := image.NewPaletted(bounds, palette)
+		dst := image.NewPaletted(bounds, palette2)
+
 		draw.Draw(dst, bounds, img, bounds.Min, draw.Src)
 
 		images = append(images, dst)
 		delays = append(delays, param.opt.GifDelay)
 		disposals = append(disposals, gif.DisposalBackground)
 
-		var opt gif.Options
-		opt.NumColors = 256
+		// var opt gif.Options
+		// opt.NumColors = 256
 
 		// gif.Encode(out, img, &opt)
 	}
