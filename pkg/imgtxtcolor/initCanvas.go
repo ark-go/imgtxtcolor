@@ -38,10 +38,16 @@ func (p *stPadding) setAll(v int) {
 	p.bottom = v
 }
 
+type stCanvasOpt struct {
+	padding *stPadding
+	bgColor color.RGBA
+	round   float64
+}
 type stParam struct {
 	drw *font.Drawer
 	// текуший Image
-	canvas *image.RGBA
+	canvas    *image.RGBA
+	canvasOpt *stCanvasOpt
 	// структура top,bottom,left,right
 	padding     *stPadding
 	currentFont *truetype.Font
@@ -143,7 +149,10 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 		palette:   make(map[color.RGBA]bool),
 		//width:          startOption.Width,
 		//height:      startOption.Height,
-		opt:         startOption,
+		opt: startOption,
+		canvasOpt: &stCanvasOpt{
+			padding: &stPadding{},
+		},
 		isNewCanvas: true,
 	}
 
@@ -154,11 +163,12 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	return &param, err
 }
 
-func canvasSetBackground(param *stParam) {
+func canvasSetBackground(param *stParam, col color.Color) {
 	ctx := gg.NewContextForRGBA(param.canvas)
 
 	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.round))
-	ctx.SetColor(param.opt.BgColor)
+	//ctx.SetColor(param.opt.BgColor)
+	ctx.SetColor(col)
 	ctx.Fill()
 }
 

@@ -5,6 +5,10 @@ func (p *stParam) textToHeight() {
 		return
 	}
 	switch p.opt.AlignHeight {
+	case "top":
+		//textToCenterHeight(p)
+		//	p.isNewCanvas = true // новый текст в новом Image
+		textToTopHeight(p)
 	case "center":
 		textToCenterHeight(p)
 	case "bottom":

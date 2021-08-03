@@ -3,6 +3,8 @@ package imgtxtcolor
 import (
 	"image"
 	"image/draw"
+
+	"github.com/fogleman/gg"
 )
 
 func textToBottomHeight(param *stParam) {
@@ -10,11 +12,18 @@ func textToBottomHeight(param *stParam) {
 		log.Println("textToBottomHeight: Что-то не так.")
 		return
 	}
-	textHeight := param.textHeightSumm.Ceil() + param.padding.top + param.drw.Face.Metrics().Descent.Ceil() // + param.drw.Face.Metrics().Descent.Ceil() // текущая линия,                   //
-	//m := param.canvas.SubImage(image.Rect(0, param.padding.top, param.opt.Width, textHeight))                   //.(*image.RGBA)
-	m := param.canvas.SubImage(image.Rect(param.padding.left, param.padding.top, param.opt.Width-param.padding.right, textHeight))
 
-	// перевод его в новый RGB  чтоб закрасить старый и наложить обратно   // TODO почему image.image не так рисуется как image.RGBA
+	textHeight := param.textHeightSumm.Ceil() + param.padding.top + param.drw.Face.Metrics().Descent.Ceil() // + param.drw.Face.Metrics().Descent.Ceil() // текущая линия,                   //
+
+	x0 := param.canvas.Rect.Min.X + param.canvasOpt.padding.left
+	y0 := param.canvas.Rect.Min.Y + param.canvasOpt.padding.top
+	x1 := param.canvas.Rect.Max.X - param.canvasOpt.padding.right
+	y2 := textHeight
+	m := param.canvas.SubImage(image.Rect(x0, y0, x1, y2))
+
+	//	m := param.canvas.SubImage(image.Rect(param.padding.left, param.padding.top, param.opt.Width-param.padding.right, textHeight))
+
+	// перевод его в новый RGB  чтоб закрасить старый и наложить обратно
 	// размеры отрезанного куска
 	b := m.Bounds()
 	newCrop := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
@@ -22,16 +31,21 @@ func textToBottomHeight(param *stParam) {
 	draw.Draw(newCrop, newCrop.Bounds(), m, b.Min, draw.Src)
 	// color, _ := getColor("yellow")
 	// draw.Draw(newCrop, newCrop.Bounds(), &image.Uniform{C: color}, image.Point{}, draw.Src)
-	iHeight := param.canvas.Rect.Dy()                    // высота Canvas
-	iHeightTxt := textHeight - param.padding.top         // нижняя граница текста минус top padding
-	top := (iHeight - iHeightTxt) - param.padding.bottom // все свободное место минус padding-bottom
+	iHeight := param.canvas.Rect.Dy()                              // высота Canvas
+	iHeightTxt := textHeight - param.canvasOpt.padding.top         // нижняя граница текста минус top padding
+	top := (iHeight - iHeightTxt) - param.canvasOpt.padding.bottom // все свободное место минус padding-bottom
 	// точка для совмещения нашего отрезанного куска с основным изображением
-	pointSP := param.canvas.Bounds().Min.Add(image.Point{param.padding.left * -1, top * -1})
+	pointSP := param.canvas.Bounds().Min.Add(image.Point{param.canvasOpt.padding.left * -1, top * -1})
 	// теперь закрасим все, а все что надо мы уже отрезали в newCrop
-	canvasSetBackground(param)
+	//canvasSetBackground(param, param.canvasOpt.bgColor)
+	ctx := gg.NewContextForRGBA(param.canvas)
+	ctx.DrawRoundedRectangle(0, 0, float64(param.canvas.Rect.Dx()), float64(param.canvas.Rect.Dy()), float64(param.round))
+	ctx.SetColor(param.canvasOpt.bgColor)
+	ctx.Fill()
+
 	//draw.Draw(param.canvas, param.canvas.Bounds(), &image.Uniform{C: param.opt.BgColor}, image.Point{}, draw.Src)
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
-	draw.Draw(param.canvas, param.canvas.Bounds(), newCrop, pointSP, draw.Src)
+	draw.Draw(param.canvas, param.canvas.Bounds(), newCrop, pointSP, draw.Over) //Over Src
 
 	param.isNewCanvas = true // сообщаем - требуется новый Canvas
 

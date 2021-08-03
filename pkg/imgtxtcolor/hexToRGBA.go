@@ -5,6 +5,8 @@ import (
 	"image/color"
 )
 
+// смотреть еще  https://github.com/pwaller/go-hexcolor/blob/master/hexcolor.go
+
 func hexToRGBA(hex string) (color.RGBA, error) {
 	var (
 		rgba             color.RGBA

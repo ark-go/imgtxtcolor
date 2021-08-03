@@ -17,10 +17,10 @@ func drawLine2(param *stParam, word string) bool {
 		// TODO
 	}
 
-	if ok := checkHeight(param, word); !ok {
+	if ok := checkHeight(param, word, true); !ok {
 		if len(word) > 0 {
 			param.addNextCanvas()
-			if ok := checkHeight(param, word); !ok {
+			if ok := checkHeight(param, word, true); !ok {
 				return false // нет места для строк
 			}
 			//			log.Println("height text", param.textHeightSumm.Ceil(), text)

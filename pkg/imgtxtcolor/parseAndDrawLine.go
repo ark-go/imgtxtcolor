@@ -15,6 +15,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 	go lineSplitSpace(text, " ", c)
 
 	isCmd := false
+	isBreak := false
 	for word := range c {
 		if word == "time:now" {
 			t := time.Now()
@@ -22,13 +23,17 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		}
 		// проверка на команду
 		if str, cmd := commandGet(word); cmd != "" { // команду пропускаем
-			if isCmd = commandCheck(p, str, cmd); isCmd {
+			tBreak := false
+			if isCmd, tBreak = commandCheck(p, str, cmd); isCmd {
+				if tBreak {
+					isBreak = true
+				}
 				// только если распознали команду пропускаем и не печатаем слово
 				continue
 			}
 		}
 		if isCmd {
-			// предыдущим словом была команда, или Break  за ней убираем все последующие пробелы
+			// предыдущим словом была команда, за ней убираем все последующие пробелы
 			word = strings.TrimLeft(word, " ") // удалит пробелы из начала слова
 			if word == "" {
 				// не будем снимать флаг isCmd, а будем удалять всё пустое простраство слева от следущего слова после команды
@@ -38,7 +43,12 @@ func (p *stParam) parseAndDrawLine(text string) error {
 
 		}
 		test := 1
+
 		if test == 1 {
+			if isBreak {
+				p.textToHeight() // перерисовка текста и заявка на новый Image
+				isBreak = false
+			}
 			sbTmp.WriteString(word) // temp - только для измерения длинны
 			if p.isNewCanvas {
 				p.addNextCanvas()
@@ -66,6 +76,11 @@ func (p *stParam) parseAndDrawLine(text string) error {
 			}
 		}
 		sb.WriteString(word)
+	}
+	// если Break был на одельной строке и после него, в строке, не было текста
+	if isBreak {
+		p.textToHeight() // перерисовка текста и заявка на новый Image
+		isBreak = false
 	}
 
 	sbStr := strings.TrimRight(sb.String(), " ")
