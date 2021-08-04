@@ -55,7 +55,7 @@ gitsave:
 	line=`git describe --tags`;\
 #	echo $$line; \
 #	echo Введите комментарий: $$line [n - отмена];\
-	read -p "Введите комментарий [n-отмена]: " line;\
+	read -p "Введите комментарий [n-отмена push]: " line;\
 	line=$${line:-_};\
 	if [[ $$line == "n" ]]; \
 	then \
