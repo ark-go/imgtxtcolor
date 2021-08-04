@@ -54,8 +54,9 @@ gitsave:
 	git status --short;\
 	line=`git describe --tags`;\
 #	echo $$line; \
-	echo Введите комментарий: $$line [n - отмена];\
-	read line;\
+#	echo Введите комментарий: $$line [n - отмена];\
+	read -p "Введите комментарий [n-отмена]: " line;\
+	line=$${line:-_};\
 	if [[ $$line == "n" ]]; \
 	then \
 	echo вы отказались; \
