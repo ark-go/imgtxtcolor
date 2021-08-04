@@ -48,10 +48,35 @@ check:
 	}
 #endif
 	
+gitsave:
+	@{ \
+	set -e ;\
+	git status --short;\
+	line=`git describe --tags`;\
+#	echo $$line; \
+	echo Введите комментарий: $$line [n - отмена];\
+	read line;\
+	if [[ $$line == "n" ]]; \
+	then \
+	echo вы отказались; \
+	exit 7;\
+	else \
+	git commit -a -m $$line ;\
+#	git push origin --tags ;\
+	echo end;\
+	fi;\
+	}
+
+
 #	@git tag $$line
 #	@git push origin --tags
 
 help:
-	go doc -all ./internal
-	go doc -all ./cmd/app/main
-	go doc -all ./pkg/structs
+	$(info run - соберем и запустим)
+	$(info build - соберем без запуска)
+	$(info gittag - установим новый тэг)
+	$(info gitlasttag - показать последний тэг)
+
+#	go doc -all ./internal
+#	go doc -all ./cmd/app/main
+#	go doc -all ./pkg/structs
