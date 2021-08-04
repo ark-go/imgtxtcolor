@@ -62,6 +62,7 @@ gitsave:
 	exit 7;\
 	else \
 	git commit -a -m $$line ;\
+	git push origin;\
 #	git push origin --tags ;\
 	echo end;\
 	fi;\
