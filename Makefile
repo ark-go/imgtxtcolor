@@ -58,9 +58,9 @@ gitsave:
 	line=`git describe --tags | cut -d "-" -f 1`;\
 	echo последний тэг: $$line; \
 #	echo Введите комментарий: $$line [n - отмена];\
-	read -p "Введите комментарий [n-отмена push ($$line)]: " line;\
-	line=$${line:-_};\
-	if [[ $$line == "n" ]]; \
+	read -p "Введите комментарий [n-отмена push ($$line)]: " commitname;\
+	line=$${commitname:-_};\
+	if [[ $$commitname == "n" ]]; \
 	then \
 	echo вы отказались; \
 	exit 7;\
