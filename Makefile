@@ -59,7 +59,7 @@ gitsave:
 	echo последний тэг: $$line; \
 #	echo Введите комментарий: $$line [n - отмена];\
 	read -p "Введите комментарий [n-отмена push ($$line)]: " commitname;\
-	line=$${commitname:-_};\
+	line=$${commitname:-line};\
 	if [[ $$commitname == "n" ]]; \
 	then \
 	echo вы отказались; \
