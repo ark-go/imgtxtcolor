@@ -34,47 +34,41 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		}
 		if isCmd {
 			// предыдущим словом была команда, за ней убираем все последующие пробелы
-			word = strings.TrimLeft(word, " ") // удалит пробелы из начала слова
-			if word == "" {
+			// word = strings.TrimLeft(word, " ") // удалит пробелы из начала слова
+			// if word == "" {
+			if strings.TrimLeft(word, " ") == "" {
 				// не будем снимать флаг isCmd, а будем удалять всё пустое простраство слева от следущего слова после команды
 				continue
 			}
 			isCmd = false //  снимаем флаг и  разрешаем печатать слово
 
 		}
-		test := 1
 
-		if test == 1 {
-			if isBreak {
-				p.textToHeight() // перерисовка текста и заявка на новый Image
-				isBreak = false
-			}
-			sbTmp.WriteString(word) // temp - только для измерения длинны
-			if p.isNewCanvas {
-				p.addNextCanvas()
-			}
-			// определим куда переместится курсор
-			textWidh := p.drw.MeasureString(sbTmp.String())
+		if isBreak {
+			p.textToHeight() // перерисовка текста и заявка на новый Image
+			isBreak = false
+		}
+		sbTmp.WriteString(word) // temp - только для измерения длинны
+		if p.isNewCanvas {
+			p.addNextCanvas()
+		}
+		// определим куда переместится курсор
+		textWidh := p.drw.MeasureString(sbTmp.String())
 
-			// если вылезает новая временная строка, то пишем предыдущую
-			if textWidh.Ceil() > (p.canvas.Rect.Dx() - p.padding.lenW()) {
-				sbStr := strings.TrimRight(sb.String(), " ")
+		// если вылезает новая временная строка, то пишем предыдущую
+		if textWidh.Ceil() > (p.canvas.Rect.Dx() - p.padding.lenW()) {
+			sbStr := strings.TrimRight(sb.String(), " ")
 
-				if Ok := p.drawLine(sbStr); !Ok {
-					return errors.New("нет места по вертикали на новой канве")
-				}
-				sb.Reset()
-				sbTmp.Reset()
-				sbTmp.WriteString(word) // слово которое не влезло вставляем вначало для TMP
-				sb.WriteString(word)    // ну и начинаем новый набор с пропущеного слова
-				continue
-			}
-		} else if test == 2 {
-
-			if Ok := drawLine2(p, word); !Ok {
+			if Ok := p.drawLine(sbStr); !Ok {
 				return errors.New("нет места по вертикали на новой канве")
 			}
+			sb.Reset()
+			sbTmp.Reset()
+			sbTmp.WriteString(word) // слово которое не влезло вставляем вначало для TMP
+			sb.WriteString(word)    // ну и начинаем новый набор с пропущеного слова
+			continue
 		}
+
 		sb.WriteString(word)
 	}
 	// если Break был на одельной строке и после него, в строке, не было текста
@@ -89,7 +83,5 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		return errors.New("нет места по вертикали на новой канве2")
 	}
 
-	//	}
-	//}
 	return nil
 }

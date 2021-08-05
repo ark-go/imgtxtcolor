@@ -92,7 +92,6 @@ func commandCheck(param *stParam, str, cmd string) (_cmd, _break bool) {
 		// Только в начале текста, иначе все закрасит
 		if col, ok := getColor(str); ok {
 			param.isNewCanvas = true
-			//param.textToHeight()
 			param.opt.BgColor = col
 			param.palette[col] = true
 			return true, true
@@ -122,22 +121,21 @@ func commandCheck(param *stParam, str, cmd string) (_cmd, _break bool) {
 	case "break":
 		switch strings.ToLower(str) {
 		case "page":
-			//param.textToHeight() // перерисовка текста и заявка на новый Image
 			return true, true
 		default:
 			isCmd = false // не засчитали команду
 		}
 		return isCmd, false
-	case "alignh", "alignv":
+	case "alignv", "alignh":
 		switch strings.ToLower(str) {
 		case "top":
-			param.opt.AlignHeight = "top"
+			param.opt.AlignVertical = AlignVerticalTop
 			return true, true
 		case "center":
-			param.opt.AlignHeight = "center"
+			param.opt.AlignVertical = AlignVerticalCenter
 			return true, true
 		case "bottom":
-			param.opt.AlignHeight = "bottom"
+			param.opt.AlignVertical = AlignVerticalBottom
 			return true, true
 		default:
 			isCmd = false // не засчитали команду
@@ -157,6 +155,10 @@ func getColor(str string) (color.RGBA, bool) {
 		} else {
 			return col, true
 		}
+	}
+	if str == "transparent" {
+		var u = color.RGBA{0, 0, 0, 0}
+		return u, true
 	}
 	col1, ok := colornames.Map[str]
 	return col1, ok

@@ -12,20 +12,18 @@ func textToBottomHeight(param *stParam) {
 		log.Println("textToBottomHeight: Что-то не так.")
 		return
 	}
-
-	textHeight := param.textHeightSumm.Ceil() + param.padding.top + param.drw.Face.Metrics().Descent.Ceil() // + param.drw.Face.Metrics().Descent.Ceil() // текущая линия,                   //
-
+	testY := param.getBottomBorder()
+	//textHeight := param.textHeightSumm.Ceil() + param.padding.top + param.drw.Face.Metrics().Descent.Ceil() // + param.drw.Face.Metrics().Descent.Ceil() // текущая линия,                   //
+	textHeight := testY
 	x0 := param.canvas.Rect.Min.X + param.canvasOpt.padding.left
 	y0 := param.canvas.Rect.Min.Y + param.canvasOpt.padding.top
 	x1 := param.canvas.Rect.Max.X - param.canvasOpt.padding.right
 	y2 := textHeight
 	m := param.canvas.SubImage(image.Rect(x0, y0, x1, y2))
 
-	//	m := param.canvas.SubImage(image.Rect(param.padding.left, param.padding.top, param.opt.Width-param.padding.right, textHeight))
-
 	// перевод его в новый RGB  чтоб закрасить старый и наложить обратно
-	// размеры отрезанного куска
 	b := m.Bounds()
+	// создадим новый Image, в него будем переносить наш m
 	newCrop := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 	// или вставляем наш отрезанный
 	draw.Draw(newCrop, newCrop.Bounds(), m, b.Min, draw.Src)
@@ -39,6 +37,7 @@ func textToBottomHeight(param *stParam) {
 	// теперь закрасим все, а все что надо мы уже отрезали в newCrop
 	//canvasSetBackground(param, param.canvasOpt.bgColor)
 	ctx := gg.NewContextForRGBA(param.canvas)
+	ctx.Clear()
 	ctx.DrawRoundedRectangle(0, 0, float64(param.canvas.Rect.Dx()), float64(param.canvas.Rect.Dy()), float64(param.round))
 	ctx.SetColor(param.canvasOpt.bgColor)
 	ctx.Fill()

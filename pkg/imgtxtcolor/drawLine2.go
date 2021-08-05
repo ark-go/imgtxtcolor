@@ -12,15 +12,16 @@ func drawLine2(param *stParam, word string) bool {
 	// вычислим на сколько продвинется "курсор" по горизонтали
 	param.textWidthSumm += param.drw.MeasureString(word)
 	// выясним меняется ли высота в строке
-	if param.textHeightTmp < param.getHeight() {
-		param.textHeightTmp = param.getHeight()
+	metric := param.drw.Face.Metrics()
+	if param.textHeightTmp < metric.Height+param.lineSpacing {
+		param.textHeightTmp = metric.Height + param.lineSpacing
 		// TODO
 	}
 
-	if ok := checkHeight(param, word, true); !ok {
+	if ok := param.checkHeight(word); !ok {
 		if len(word) > 0 {
 			param.addNextCanvas()
-			if ok := checkHeight(param, word, true); !ok {
+			if ok := param.checkHeight(word); !ok {
 				return false // нет места для строк
 			}
 			//			log.Println("height text", param.textHeightSumm.Ceil(), text)

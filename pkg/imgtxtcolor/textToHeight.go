@@ -4,14 +4,14 @@ func (p *stParam) textToHeight() {
 	if len(p.allImages) < 1 {
 		return
 	}
-	switch p.opt.AlignHeight {
-	case "top":
+	switch p.canvasOpt.alignVertical {
+	case AlignVerticalTop:
 		//textToCenterHeight(p)
 		//	p.isNewCanvas = true // новый текст в новом Image
 		textToTopHeight(p)
-	case "center":
+	case AlignVerticalCenter:
 		textToCenterHeight(p)
-	case "bottom":
+	case AlignVerticalBottom:
 		textToBottomHeight(p)
 	}
 }

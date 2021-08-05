@@ -11,12 +11,6 @@ import (
 )
 
 func (p *stParam) addNextCanvas() {
-	// if !p.isNewCanvas {
-	// 	return
-	// }
-	if len(p.allImages) > 0 {
-		//	p.textToHeight() // обработка предыдущего Image
-	}
 	if p.canvas == nil {
 		p.drw = &font.Drawer{
 			Dst: p.canvas,
@@ -38,6 +32,7 @@ func (p *stParam) addNextCanvas() {
 	p.isNewCanvas = false // сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
 	p.setFontSize(p.opt.FontSizeInt)
 	p.canvasOpt.bgColor = p.opt.BgColor
+	p.canvasOpt.alignVertical = p.opt.AlignVertical
 	p.canvasOpt.padding.bottom = p.padding.bottom
 	p.canvasOpt.padding.left = p.padding.left
 	p.canvasOpt.padding.top = p.padding.top

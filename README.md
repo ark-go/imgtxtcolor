@@ -1,10 +1,15 @@
 # imgtxtcolor
 
+Все команды действуют с начала вставки и до конца текста, их можно переназначать,
+вставляются в текст command:value и должны отделятся пробелами, все пробелы после команды будут убраны
+
 ### В начале строки
+
+команды для строк, вставляются в любом месте но начинают действовать с начала текущей строки
 
 - fontSize, size
 - fontColor, color
-- lineSpacing, linespacing
+- lineSpacing - межстрочное расстояние
 - align
   - left
   - center
@@ -12,22 +17,29 @@
 
 ### Для следущего Image
 
+Следущие команды начнут новый Image, они должны указываться подряд в любом порядке с начала строки,
+между ними не должно быть текста, только пробелы, иначе будут создаваться новые страницы-image
+
+- alignH, alignV
+  - top
+  - center
+  - bottom
 - padding
 - paddingTop, top
 - paddingLeft, left
 - paddingRigh, right
 - paddingBottom, bottom
-- round
-- bgColor, bgcolor
+- round - радиус углов
+  - auto или не число, радиус углов будет в половину размера paddingTop
+- bgcolor - цвет фона
 - width
 - height
+- rect:tg
 
-### Завершить Image и выровнить по вертикали нарисованное
+### Завершить Image
 
-- break, position
-  - top
-  - center
-  - bottom
+принудительно разорвать текст
 
-time:now - вставит время  
-rr
+- break:page
+
+time:now - вставит время

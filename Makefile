@@ -53,7 +53,7 @@ gitsave:
 	set -e ;\
 	git status --short;\
 	line=`git describe --tags`;\
-#	echo $$line; \
+	echo последний тэг: $$line; \
 #	echo Введите комментарий: $$line [n - отмена];\
 	read -p "Введите комментарий [n-отмена push]: " line;\
 	line=$${line:-_};\

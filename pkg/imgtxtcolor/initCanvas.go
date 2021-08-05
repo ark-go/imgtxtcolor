@@ -38,10 +38,19 @@ func (p *stPadding) setAll(v int) {
 	p.bottom = v
 }
 
+type alignVertical int
+
+const (
+	AlignVerticalTop alignVertical = iota
+	AlignVerticalCenter
+	AlignVerticalBottom
+)
+
 type stCanvasOpt struct {
-	padding *stPadding
-	bgColor color.RGBA
-	round   float64
+	padding       *stPadding
+	bgColor       color.RGBA
+	round         float64
+	alignVertical alignVertical
 }
 type stParam struct {
 	drw *font.Drawer
@@ -72,18 +81,6 @@ type stParam struct {
 	isNewCanvas bool
 }
 
-// высота полного шрифта + межстрочный
-func (p *stParam) getHeight() fixed.Int26_6 {
-	if p.drw == nil {
-		log.Println("error getHeight")
-		return fixed.I(0)
-	}
-	metric := p.drw.Face.Metrics()
-	//log.Println("height:", metric.Height, "AsDes", metric.Ascent+metric.Descent)
-	return metric.Height + p.lineSpacing
-	//return metric.Ascent + metric.Descent + p.lineSpacing // fixed.I(2) // рекомендуемое  metric.Height
-}
-
 func (p *stParam) setFontSize(size int) {
 	if size < 1 {
 		size = 20
@@ -110,7 +107,7 @@ type stStartOptions struct {
 	// цвет фона
 	BgColor color.RGBA
 	// по высоте
-	AlignHeight string
+	AlignVertical alignVertical
 	// gif - file name
 	GifFileName string
 	// gif delay
@@ -120,14 +117,14 @@ type stStartOptions struct {
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
 	return &stStartOptions{
-		Width:       500,
-		Height:      350,
-		FontSizeInt: 20,
-		FgColor:     &image.Uniform{C: colornames.Yellow},
-		BgColor:     colornames.Darkslategray,
-		AlignHeight: "center",
-		GifFileName: "",
-		GifDelay:    100 * 4,
+		Width:         500,
+		Height:        350,
+		FontSizeInt:   20,
+		FgColor:       &image.Uniform{C: colornames.Yellow},
+		BgColor:       colornames.Darkslategray,
+		AlignVertical: AlignVerticalCenter,
+		GifFileName:   "",
+		GifDelay:      100 * 4,
 	}
 }
 func initCanvas(startOption *stStartOptions) (*stParam, error) {
