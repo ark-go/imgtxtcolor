@@ -46,17 +46,19 @@ const (
 	AlignVerticalBottom
 )
 
-type stCanvasOpt struct {
+type ImgCanvas struct {
+	img           *image.RGBA
 	padding       *stPadding
 	bgColor       color.RGBA
 	round         float64
 	alignVertical alignVertical
+	gifDelay      int
 }
 type stParam struct {
 	drw *font.Drawer
 	// текуший Image
-	canvas    *image.RGBA
-	canvasOpt *stCanvasOpt
+	//canvas    *image.RGBA
+	canvas *ImgCanvas
 	// структура top,bottom,left,right
 	padding     *stPadding
 	currentFont *truetype.Font
@@ -73,7 +75,7 @@ type stParam struct {
 	// межстрочное расстояние default: 2
 	lineSpacing fixed.Int26_6
 	// массив нарисованных Image
-	allImages []*image.RGBA
+	allCanvas []*ImgCanvas //[]*image.RGBA
 	palette   map[color.RGBA]bool
 	// временно
 	opt *stStartOptions
@@ -86,7 +88,7 @@ func (p *stParam) setFontSize(size int) {
 		size = 20
 	}
 	p.opt.FontSizeInt = size // сохраним выбор
-	if p.canvas != nil {     // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
+	if p.canvas.img != nil { // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
 		p.drw.Face = truetype.NewFace(p.currentFont, &truetype.Options{
 			Size:    float64(size),
 			Hinting: font.HintingFull,
@@ -134,6 +136,9 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	padding := stPadding{20, 20, 20, 20}
 	var err error
 	param := stParam{
+		canvas: &ImgCanvas{
+			padding: &stPadding{},
+		},
 		xPositionFunc:  func(str string) fixed.Int26_6 { return fixed.I(padding.left) }, // влево,
 		padding:        &padding,
 		border:         stBorder{false, 10, 10, 10, 10},
@@ -141,27 +146,21 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 		textWidthSumm:  fixed.I(0),
 		textHeightTmp:  fixed.I(0),
 		lineSpacing:    fixed.I(2),
-		//	bgColor:        colornames.Darkslategray,
-		allImages: []*image.RGBA{},
-		palette:   make(map[color.RGBA]bool),
-		//width:          startOption.Width,
-		//height:      startOption.Height,
-		opt: startOption,
-		canvasOpt: &stCanvasOpt{
-			padding: &stPadding{},
-		},
-		isNewCanvas: true,
+		allCanvas:      []*ImgCanvas{},
+		palette:        make(map[color.RGBA]bool),
+		opt:            startOption,
+		isNewCanvas:    true,
 	}
 
 	setCurrentFont(&param, nil)
 
-	param.canvas = nil
+	param.canvas.img = nil
 	param.drw = nil
 	return &param, err
 }
 
 func canvasSetBackground(param *stParam, col color.Color) {
-	ctx := gg.NewContextForRGBA(param.canvas)
+	ctx := gg.NewContextForRGBA(param.canvas.img)
 
 	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.round))
 	//ctx.SetColor(param.opt.BgColor)

@@ -38,8 +38,19 @@ func hexToRGBA(hex string) (color.RGBA, error) {
 		rgba.R = hexToByte(hex[1]) * 17
 		rgba.G = hexToByte(hex[2]) * 17
 		rgba.B = hexToByte(hex[3]) * 17
+	case 5:
+		rgba.R = hexToByte(hex[1]) * 17
+		rgba.G = hexToByte(hex[2]) * 17
+		rgba.B = hexToByte(hex[3]) * 17
+		rgba.A = hexToByte(hex[4]) * 17
+	case 9:
+		rgba.R = hexToByte(hex[1])<<4 + hexToByte(hex[2])
+		rgba.G = hexToByte(hex[3])<<4 + hexToByte(hex[4])
+		rgba.B = hexToByte(hex[5])<<4 + hexToByte(hex[6])
+		rgba.A = hexToByte(hex[7])<<4 + hexToByte(hex[8])
 	default:
 		err = errInvalidFormat
+
 	}
 	return rgba, err
 }

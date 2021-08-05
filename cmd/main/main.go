@@ -64,8 +64,7 @@ func main() {
 			fimgNames = append(fimgNames, "error.png")
 		} else {
 
-			for i, img := range avatar {
-				_ = img
+			for i, imgCanvas := range avatar {
 				name := "img" + strconv.Itoa(i) + ".png"
 				f, err := os.Create("internal/img/" + name)
 				if err != nil {
@@ -73,7 +72,7 @@ func main() {
 				}
 				defer f.Close()
 
-				png.Encode(f, img)
+				png.Encode(f, imgCanvas)
 				fimgNames = append(fimgNames, name)
 			}
 		}
@@ -118,8 +117,6 @@ func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, er
 	}
 	//	dd = imgtxtcolor.GetBase64(canvasArr[0])
 	log.Println("Всего картинок:", len(canvasArr))
-	//log.Println(language.Base)
-	//	imgtxtcolor.ToGif(canvasArr)
 
 	return canvasArr, nil
 }

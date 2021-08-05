@@ -9,7 +9,7 @@ import (
 	"os"
 )
 
-func ToGif(param *stParam, fileName string) {
+func (p *stParam) ToGif() {
 	var images []*image.Paletted
 	var delays []int
 	var disposals []byte
@@ -17,20 +17,20 @@ func ToGif(param *stParam, fileName string) {
 	// в Plan9 нет прозрачного цвета
 	var palette2 color.Palette = palette.WebSafe   // 216 цветов
 	palette2 = append(palette2, image.Transparent) // добавляем еще прозрачный
-	for i := 0; i < len(param.allImages); i++ {
+	for i := 0; i < len(p.allCanvas); i++ {
 
-		img := param.allImages[i]
+		img := p.allCanvas[i].img
 		bounds := img.Bounds()
 
 		dst := image.NewPaletted(bounds, palette2)
 		draw.Draw(dst, bounds, img, bounds.Min, draw.Src)
 
 		images = append(images, dst)
-		delays = append(delays, param.opt.GifDelay)
+		delays = append(delays, p.allCanvas[i].gifDelay)
 		disposals = append(disposals, gif.DisposalBackground)
 	}
 
-	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE, 0600)
+	f, err := os.OpenFile(p.opt.GifFileName, os.O_WRONLY|os.O_CREATE, 0600)
 	if err != nil {
 		log.Println(err)
 		return
@@ -39,7 +39,7 @@ func ToGif(param *stParam, fileName string) {
 	err = gif.EncodeAll(f, &gif.GIF{
 		Image:    images,
 		Delay:    delays,
-		Disposal: disposals,
+		Disposal: disposals, //без этго не стирает предыдущие картинки gif.DisposalBackground
 	})
 	if err != nil {
 		log.Println(err.Error())

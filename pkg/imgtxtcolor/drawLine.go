@@ -7,7 +7,7 @@ import (
 // отрисовываем строку
 func (p *stParam) drawLine(text string) bool {
 
-	if p.canvas == nil || p.isNewCanvas {
+	if p.canvas.img == nil || p.isNewCanvas {
 		if text == "" {
 			return true // новый Image и первое что пришло это пусто, может быть если были команды они подтирают за собой все пробелы
 		}
@@ -18,7 +18,7 @@ func (p *stParam) drawLine(text string) bool {
 
 	if ok := p.checkHeight(text); !ok { // у нас перебор по высоте
 		if len(text) > 0 { // есть текст
-			p.textToHeight()                    // выравнивание по вертикали напечатанный Image
+			p.textAlignVertical()               // выравнивание по вертикали напечатанный Image
 			p.addNextCanvas()                   // добавим еще Canvas
 			if ok := p.checkHeight(text); !ok { // и снова перебор, говорим об ошибке
 				return false // нет места для строк
@@ -47,10 +47,10 @@ func (p *stParam) checkHeight(text string) bool {
 	} else {
 		p.textHeightSumm += fullHeightFont // куда надо писать, отступ сверху (размер шрифта + lineSpacing)
 	}
-	yPosition := fixed.I(p.padding.top)
+	yPosition := fixed.I(p.canvas.padding.top)
 	yPosition += p.textHeightSumm // куда надо писать, отступ сверху + paddingTop
 
-	if yPosition.Ceil()+p.padding.bottom > p.canvas.Rect.Dy() {
+	if yPosition.Ceil()+p.canvas.padding.bottom > p.canvas.img.Rect.Dy() {
 		p.textHeightSumm -= fullHeightFont // если перебор, возвращаем позицию
 		return false
 	}

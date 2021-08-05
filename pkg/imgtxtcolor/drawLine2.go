@@ -1,11 +1,9 @@
 package imgtxtcolor
 
-import ()
-
 func drawLine2(param *stParam, word string) bool {
 	// новый Image если еще нет или требуют новый
-	if param.canvas == nil || param.isNewCanvas {
-		if len(word) > 0 || param.canvas == nil {
+	if param.canvas.img == nil || param.isNewCanvas {
+		if len(word) > 0 || param.canvas.img == nil {
 			param.addNextCanvas()
 		}
 	}

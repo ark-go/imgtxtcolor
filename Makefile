@@ -1,15 +1,15 @@
 SHELL := /bin/bash
 .PHONY: check
 
-.SILENT: build getlasttag
+.SILENT: build getlasttag buildzip
 
-# build: getlasttag
-# 	$(info +Компиляция)
-# 	go build -o ./bin/main/main cmd/app/main/main.go
+
 build:
 	$(info +Компиляция)
 	go build -o ./bin/main/canvas cmd/main/main.go
-
+buildzip:
+	$(info +Компиляция с жатием)
+	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
 buildwin:
 	$(info +Компиляция windows)
 	GOOS=windows GOARCH=amd64 go build -o ./bin/main/wincanvas.exe cmd/app/main/main.go
@@ -56,14 +56,13 @@ gitsave:
 	set -e ;\
 	git status --short;\
 	line=`git describe --tags | cut -d "-" -f 1`;\
-	echo последний тэг: $$line; \
-#	echo Введите комментарий: $$line [n - отмена];\
-	read -p "Введите комментарий [n-отмена push ($$line)]: " commitname;\
+	echo Отправляем изменения на сервр, последний тэг: $$line; \
+	read -p "Введите комментарий [ n-отменить отправку ( по умолчанию: $$line )]: " commitname;\
 	line=$${commitname:-$$line};\
 	if [[ $$commitname == "n" ]]; \
 	then \
-	echo вы отказались; \
-	exit 7;\
+	echo вы отказались отправлять изменения; \
+	exit 0;\
 	else \
 	git commit -a -m $$line ;\
 	git push origin;\
@@ -80,6 +79,7 @@ gitsave:
 help:
 	$(info run - соберем и запустим)
 	$(info build - соберем без запуска)
+	$(info gitsend - отправим на сервер, поставим тэг)
 	$(info gitsave - отправим на сервер)
 	$(info gittag - установим новый тэг)
 	$(info gitlasttag - показать последний тэг)

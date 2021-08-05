@@ -84,9 +84,13 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*imag
 			return nil, err
 		}
 	}
-	param.textToHeight()
+	param.textAlignVertical()
 	if param.opt.GifFileName != "" {
-		ToGif(param, param.opt.GifFileName)
+		param.ToGif()
 	}
-	return param.allImages, err
+	ret := []*image.RGBA{}
+	for i := 0; i < len(param.allCanvas); i++ {
+		ret = append(ret, param.allCanvas[i].img)
+	}
+	return ret, err
 }

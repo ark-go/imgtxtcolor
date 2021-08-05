@@ -21,10 +21,14 @@ func (p *stParam) parseAndDrawLine(text string) error {
 			t := time.Now()
 			word = t.Format("15:04:05")
 		}
+		if word == "date:now" {
+			t := time.Now()
+			word = t.Format("02.01.2006")
+		}
 		// проверка на команду
 		if str, cmd := commandGet(word); cmd != "" { // команду пропускаем
 			tBreak := false
-			if isCmd, tBreak = commandCheck(p, str, cmd); isCmd {
+			if isCmd, tBreak = p.commandCheck(str, cmd); isCmd {
 				if tBreak {
 					isBreak = true
 				}
@@ -45,7 +49,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		}
 
 		if isBreak {
-			p.textToHeight() // перерисовка текста и заявка на новый Image
+			p.textAlignVertical() // перерисовка текста и заявка на новый Image
 			isBreak = false
 		}
 		sbTmp.WriteString(word) // temp - только для измерения длинны
@@ -56,7 +60,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		textWidh := p.drw.MeasureString(sbTmp.String())
 
 		// если вылезает новая временная строка, то пишем предыдущую
-		if textWidh.Ceil() > (p.canvas.Rect.Dx() - p.padding.lenW()) {
+		if textWidh.Ceil() > (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW()) {
 			sbStr := strings.TrimRight(sb.String(), " ")
 
 			if Ok := p.drawLine(sbStr); !Ok {
@@ -73,7 +77,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 	}
 	// если Break был на одельной строке и после него, в строке, не было текста
 	if isBreak {
-		p.textToHeight() // перерисовка текста и заявка на новый Image
+		p.textAlignVertical() // перерисовка текста и заявка на новый Image
 		isBreak = false
 	}
 
