@@ -68,7 +68,7 @@ gitsave:
 	echo end;\
 	fi;\
 	}
-
+	check
 
 #	@git tag $$line
 #	@git push origin --tags
