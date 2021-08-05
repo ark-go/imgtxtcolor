@@ -24,6 +24,9 @@ run: build
 
 getlasttag:
 	git describe --tags
+
+gitsend: gitsave check
+
 # make gittag tag=vx.x.x
 gittag: check
 
@@ -32,7 +35,7 @@ check:
 	
 	@{ \
 	set -e ;\
-	line=`git describe --tags`;\
+	line=`git describe --tags | cut -d "-" -f 1`;\
 #	echo $$line; \
 	echo Введите новый tag? последний тег: $$line [n - отмена];\
 	read line;\
@@ -52,10 +55,10 @@ gitsave:
 	@{ \
 	set -e ;\
 	git status --short;\
-	line=`git describe --tags`;\
+	line=`git describe --tags | cut -d "-" -f 1`;\
 	echo последний тэг: $$line; \
 #	echo Введите комментарий: $$line [n - отмена];\
-	read -p "Введите комментарий [n-отмена push]: " line;\
+	read -p "Введите комментарий [n-отмена push ($$line)]: " line;\
 	line=$${line:-_};\
 	if [[ $$line == "n" ]]; \
 	then \
@@ -68,7 +71,8 @@ gitsave:
 	echo end;\
 	fi;\
 	}
-	check
+
+#	check
 
 #	@git tag $$line
 #	@git push origin --tags
@@ -76,6 +80,7 @@ gitsave:
 help:
 	$(info run - соберем и запустим)
 	$(info build - соберем без запуска)
+	$(info gitsave - отправим на сервер)
 	$(info gittag - установим новый тэг)
 	$(info gitlasttag - показать последний тэг)
 
