@@ -18,11 +18,11 @@ import (
 )
 
 type ViewData struct {
-	SizeW       int
-	SizeH       int
-	Initials    string
-	FontSizeInt int
-	FimagNames  []string
+	SizeW      int
+	SizeH      int
+	Initials   string
+	FontSize   int
+	FimagNames []string
 }
 
 func main() {
@@ -77,11 +77,11 @@ func main() {
 			}
 		}
 		data := ViewData{
-			SizeW:       sizeW,
-			SizeH:       sizeH,
-			Initials:    initials,
-			FontSizeInt: fontSizeInt,
-			FimagNames:  fimgNames,
+			SizeW:      sizeW,
+			SizeH:      sizeH,
+			Initials:   initials,
+			FontSize:   fontSizeInt,
+			FimagNames: fimgNames,
 		}
 		tmpl, _ := template.ParseFiles("internal/test.html")
 		tmpl.Execute(w, data)
@@ -106,7 +106,7 @@ func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, er
 	opt := imgtxtcolor.StartOption()
 	opt.Width = sizeW
 	opt.Height = sizeH
-	opt.FontSizeInt = fontSizeInt
+	opt.FontSize = fontSizeInt
 	opt.GifFileName = "internal/img/test.gif"
 	opt.GifDelay = 100 * 1
 

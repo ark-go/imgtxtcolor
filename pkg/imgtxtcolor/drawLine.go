@@ -37,10 +37,10 @@ func (p *stParam) drawLine(text string) bool {
 //	влезет ли что-нибудь после пустой строки, если не влезет, то и не будем рисовать пустую строку
 //	или, тест на вместимость еще двух строк
 func (p *stParam) checkHeight(text string) bool {
-	p.drw.Dot.X = p.xPositionFunc(text) // выравнивание строки
+	p.drw.Dot.X = p.getHorizontalPos(text) // выравнивание строки
 	metric := p.drw.Face.Metrics()
 	// полная высота шрифта = межстрочный отступ / высота до базовой линии шрифта / крючки ниже линии шрифта
-	fullHeightFont := p.lineSpacing + metric.Ascent + metric.Descent
+	fullHeightFont := fixed.I(p.opt.LineSpacing) + metric.Ascent + metric.Descent
 	if p.textHeightSumm == 0 {
 		// у первой строки нет Descent
 		p.textHeightSumm += metric.Ascent // ascent - от верха до базовой линии шрифта

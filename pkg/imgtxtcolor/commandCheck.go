@@ -7,8 +7,6 @@ import (
 	"strings"
 
 	"golang.org/x/image/colornames"
-
-	"golang.org/x/image/math/fixed"
 )
 
 func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
@@ -16,20 +14,20 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	// str = strings.ToLower(str)  color,,???
 	if strings.HasPrefix(strings.ToLower(cmd), "padding") {
 		siz, err := strconv.Atoi(str)
-		if err != nil && siz < 0 {
+		if err != nil || siz < 0 {
 			return false, false
 		}
 		switch strings.ToLower(cmd) {
 		case "padding":
-			p.padding.setAll(siz)
+			p.opt.Padding.setAll(siz)
 		case "paddingtop":
-			p.padding.top = siz
+			p.opt.Padding.top = siz
 		case "paddingleft":
-			p.padding.left = siz
+			p.opt.Padding.left = siz
 		case "paddingright":
-			p.padding.right = siz
+			p.opt.Padding.right = siz
 		case "paddingbottom":
-			p.padding.bottom = siz
+			p.opt.Padding.bottom = siz
 		default:
 			return false, false
 		}
@@ -44,7 +42,6 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		}
 		// fallthrough // Переходит на следующий иначе break
 	case "fontcolor", "color":
-		//if col, ok := colornames.Map[str]; ok {
 		if col, ok := getColor(str); ok {
 			p.opt.FgColor = &image.Uniform{C: col}
 			p.palette[col] = true
@@ -58,31 +55,21 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		// определяем функции для расчета позиции по горизонтали
 		switch strings.ToLower(str) {
 		case "left":
-			p.xPositionFunc = func(str string) fixed.Int26_6 { return fixed.I(p.canvas.padding.left) } // влево
+			p.opt.AlignHorizontal = AlignHorizontalLeft
 		case "center":
-			p.xPositionFunc = func(str string) fixed.Int26_6 {
-				max := fixed.I(p.canvas.img.Rect.Max.X) // всего
-				max -= fixed.I(p.canvas.padding.right)  // отнимаем справа
-				max -= fixed.I(p.canvas.padding.left)   // отнимаем слева
-				max -= p.drw.MeasureString(str)         // получаем свободное место
-				max /= 2                                //место пополам
-				max += fixed.I(p.canvas.padding.left)   // отодвигаем слева
-				return max
-			} // для центра
+			p.opt.AlignHorizontal = AlignHorizontalCenter
 		case "right":
-			p.xPositionFunc = func(str string) fixed.Int26_6 {
-				return (fixed.I(p.canvas.img.Rect.Dx()) - p.drw.MeasureString(str) - fixed.I(p.canvas.padding.right))
-			} // вправо
+			p.opt.AlignHorizontal = AlignHorizontalRight
 		default:
 			isCmd = false // не засчитали команду
 		}
 		return isCmd, false
 	case "round":
 		if siz, err := strconv.ParseFloat(str, 64); err == nil && siz >= 0 {
-			p.round = float64(siz)
+			p.opt.Round = float64(siz)
 		} else {
-			if p.padding.top > 0 {
-				p.round = float64(p.padding.top)
+			if p.opt.Padding.top > 0 {
+				p.opt.Round = float64(p.opt.Padding.top)
 			}
 		}
 		return true, true
@@ -94,7 +81,7 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		return false, false
 	case "linespacing":
 		if siz, err := strconv.Atoi(str); err == nil {
-			p.lineSpacing = fixed.I(siz)
+			p.opt.LineSpacing = siz
 			return true, false
 		}
 	case "bgcolor":

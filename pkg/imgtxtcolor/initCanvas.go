@@ -39,11 +39,16 @@ func (p *stPadding) setAll(v int) {
 }
 
 type alignVertical int
+type alignHorizontal int
 
 const (
-	AlignVerticalTop alignVertical = iota
+	AlignVerticalTop alignVertical = iota + 1
 	AlignVerticalCenter
 	AlignVerticalBottom
+
+	AlignHorizontalLeft alignHorizontal = iota + 1
+	AlignHorizontalCenter
+	AlignHorizontalRight
 )
 
 type ImgCanvas struct {
@@ -59,21 +64,14 @@ type stParam struct {
 	// текуший Image
 	//canvas    *image.RGBA
 	canvas *ImgCanvas
-	// структура top,bottom,left,right
-	padding     *stPadding
+	// Текущий шрифт
 	currentFont *truetype.Font
-	// скругленные углы
-	round float64
 	// Не реализовано // TODO
 	border stBorder
-	// динамическая текущая функция для выравнивания текста, изменяется в зависимости от параметров
-	xPositionFunc func(str string) fixed.Int26_6
-	// базовая линия для рисования текста, Descent рисует ниже
+	//
 	textHeightSumm fixed.Int26_6 // для хранения высоты "курсора"
 	textWidthSumm  fixed.Int26_6 // TODO
 	textHeightTmp  fixed.Int26_6 // для расчета высоты строки
-	// межстрочное расстояние default: 2
-	lineSpacing fixed.Int26_6
 	// массив нарисованных Image
 	allCanvas []*ImgCanvas //[]*image.RGBA
 	palette   map[color.RGBA]bool
@@ -87,7 +85,7 @@ func (p *stParam) setFontSize(size int) {
 	if size < 1 {
 		size = 20
 	}
-	p.opt.FontSizeInt = size // сохраним выбор
+	p.opt.FontSize = size    // сохраним выбор
 	if p.canvas.img != nil { // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
 		p.drw.Face = truetype.NewFace(p.currentFont, &truetype.Options{
 			Size:    float64(size),
@@ -103,49 +101,63 @@ type stStartOptions struct {
 	// Высота
 	Height int
 	// Размер шрифта
-	FontSizeInt int
+	FontSize int
 	// цвет шрифта
 	FgColor *image.Uniform
 	// цвет фона
 	BgColor color.RGBA
 	// по высоте
 	AlignVertical alignVertical
-	// gif - file name
+	// по горизонтали
+	AlignHorizontal alignHorizontal
+	// gif - file name если не задан не будет создаваться
 	GifFileName string
-	// gif delay
-	GifDelay int // 1/100 sec
+	// gif delay  1/100 sec
+	GifDelay int
+	// paddings
+	Padding *stPadding
+	// Межстрочный интервал
+	LineSpacing int
+	// скругленные углы 0 - их нет
+	Round float64
 }
 
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
 	return &stStartOptions{
-		Width:         500,
-		Height:        350,
-		FontSizeInt:   20,
-		FgColor:       &image.Uniform{C: colornames.Yellow},
-		BgColor:       colornames.Darkslategray,
-		AlignVertical: AlignVerticalCenter,
-		GifFileName:   "",
-		GifDelay:      100 * 4,
+		Width:           500,
+		Height:          350,
+		FontSize:        20,
+		FgColor:         &image.Uniform{C: colornames.Yellow},
+		BgColor:         colornames.Darkslategray,
+		AlignVertical:   AlignVerticalCenter,
+		AlignHorizontal: AlignHorizontalCenter,
+		GifFileName:     "",
+		GifDelay:        100 * 4,
+		Padding: &stPadding{
+			left:   20,
+			right:  20,
+			top:    20,
+			bottom: 20,
+		},
+		LineSpacing: 2,
+		// скругленные углы
+		Round: 0,
 	}
 }
 func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	if startOption == nil {
 		startOption = StartOption()
 	}
-	padding := stPadding{20, 20, 20, 20}
 	var err error
 	param := stParam{
 		canvas: &ImgCanvas{
 			padding: &stPadding{},
 		},
-		xPositionFunc:  func(str string) fixed.Int26_6 { return fixed.I(padding.left) }, // влево,
-		padding:        &padding,
 		border:         stBorder{false, 10, 10, 10, 10},
 		textHeightSumm: fixed.I(0),
 		textWidthSumm:  fixed.I(0),
 		textHeightTmp:  fixed.I(0),
-		lineSpacing:    fixed.I(2),
 		allCanvas:      []*ImgCanvas{},
 		palette:        make(map[color.RGBA]bool),
 		opt:            startOption,
@@ -162,7 +174,7 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 func canvasSetBackground(param *stParam, col color.Color) {
 	ctx := gg.NewContextForRGBA(param.canvas.img)
 
-	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.round))
+	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.opt.Round))
 	//ctx.SetColor(param.opt.BgColor)
 	ctx.SetColor(col)
 	ctx.Fill()
