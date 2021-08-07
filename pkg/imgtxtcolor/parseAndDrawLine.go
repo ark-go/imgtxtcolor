@@ -63,27 +63,23 @@ func (p *stParam) parseAndDrawLine(text string) error {
 
 		// если вылезает новая временная строка, то пишем предыдущую
 		if textWidh.Ceil() > (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW()) {
-			if wordCount == 1 {
-				// печатаем слова которые не влезают в строку целиком, т.е. с начала строки
+			if wordCount == 1 { // TODO а если захотим авто ширину?
+				// печатаем слова которые не влезают на canvas целиком, т.е. с начала строки
 				wordCount = 0                 // сброс счетчика слов
 				run := []rune(sbTmp.String()) // разбиваем на руны
 
 				for len(run) > 0 { // будем печатать все слово и нарезать его
 					i := len(run)
-					for ; i > 0; i-- { // поиск наименьшего куска
+					for ; i > 0; i-- { // поиск наименьшего куска, отрезаем с конца
 						rstr := run[:i]                            // отрезаем конец
 						textW := p.drw.MeasureString(string(rstr)) // замеряем остаток
-						// if (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW() - p.drw.MeasureString("G").Ceil()) < 0 {
-						// 	//log.Println(p.canvas.img.Rect.Dx(), p.canvas.padding.lenW(), p.drw.MeasureString("G").Ceil())
-						// 	return errors.New("нет места по горизонтали")
-						// }
 						if textW.Ceil() > (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW()) {
 							continue // еще не влезает
 						}
 						if Ok := p.drawLine(string(rstr)); !Ok { // влезает, печатаем кусок
 							return errors.New("нет места по вертикали на новой канве")
 						}
-						break // напечатали часть,  проверим что осталось
+						break // напечатали часть,  проверим что осталось loop
 					}
 					if i == 0 {
 						// поскольку мы дошли до начала, напечатаем и выйдем из for
@@ -93,7 +89,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 					}
 					run = run[i:] // берем остатки, нам их все надо напечатать
 				}
-				word = "" // закончили печать строки очистим буфер
+				word = "" // закончили печать длинное слово очистим буфер
 			} else { // не влезает строка с новым словом, печатаем то что было до слова
 				sbStr := strings.TrimRight(sb.String(), " ")
 
