@@ -62,7 +62,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		textWidh := p.drw.MeasureString(sbTmp.String())
 
 		// если вылезает новая временная строка, то пишем предыдущую
-		if textWidh.Ceil() > (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW()) {
+		if textWidh.Ceil() > (p.canvas.Img.Rect.Dx() - p.canvas.padding.lenW()) {
 			if wordCount == 1 { // TODO а если захотим авто ширину?
 				// печатаем слова которые не влезают на canvas целиком, т.е. с начала строки
 				wordCount = 0                 // сброс счетчика слов
@@ -73,7 +73,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 					for ; i > 0; i-- { // поиск наименьшего куска, отрезаем с конца
 						rstr := run[:i]                            // отрезаем конец
 						textW := p.drw.MeasureString(string(rstr)) // замеряем остаток
-						if textW.Ceil() > (p.canvas.img.Rect.Dx() - p.canvas.padding.lenW()) {
+						if textW.Ceil() > (p.canvas.Img.Rect.Dx() - p.canvas.padding.lenW()) {
 							continue // еще не влезает
 						}
 						if Ok := p.drawLine(string(rstr)); !Ok { // влезает, печатаем кусок

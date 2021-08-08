@@ -1,7 +1,6 @@
 package imgtxtcolor
 
 import (
-	"image"
 	"io"
 	"io/ioutil"
 	"os"
@@ -56,10 +55,10 @@ func startLogFile(logt logtype) (*os.File, error) {
 }
 
 // Старт !!!
-func CreateImageText(text string, opt *stStartOptions) ([]*image.RGBA, error) {
+func CreateImageText(text string, opt *stStartOptions) ([]*ImgCanvas, error) {
 	return CreateImageTextLog(text, opt, LogOff)
 }
-func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*image.RGBA, error) {
+func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgCanvas, error) {
 	// maximize CPU usage for maximum performance
 	// runtime.GOMAXPROCS(runtime.NumCPU())
 
@@ -88,9 +87,9 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*imag
 	if param.opt.GifFileName != "" {
 		param.ToGif()
 	}
-	ret := []*image.RGBA{}
-	for i := 0; i < len(param.allCanvas); i++ {
-		ret = append(ret, param.allCanvas[i].img)
-	}
-	return ret, err
+	// ret := []*image.RGBA{}
+	// for i := 0; i < len(param.allCanvas); i++ {
+	// 	ret = append(ret, param.allCanvas[i].Img)
+	// }
+	return param.allCanvas, err
 }

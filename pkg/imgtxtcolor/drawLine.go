@@ -7,7 +7,7 @@ import (
 // отрисовываем строку
 func (p *stParam) drawLine(text string) bool {
 
-	if p.canvas.img == nil || p.isNewCanvas {
+	if p.canvas.Img == nil || p.isNewCanvas {
 		if text == "" {
 			return true // новый Image и первое что пришло это пусто, может быть если были команды они подтирают за собой все пробелы
 		}
@@ -50,7 +50,7 @@ func (p *stParam) checkHeight(text string) bool {
 	yPosition := fixed.I(p.canvas.padding.top)
 	yPosition += p.textHeightSumm // куда надо писать, отступ сверху + paddingTop
 
-	if yPosition.Ceil()+p.canvas.padding.bottom > p.canvas.img.Rect.Dy() {
+	if yPosition.Ceil()+p.canvas.padding.bottom > p.canvas.Img.Rect.Dy() {
 		p.textHeightSumm -= fullHeightFont // если перебор, возвращаем позицию
 		return false
 	}

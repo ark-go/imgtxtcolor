@@ -15,9 +15,9 @@ func (p *stParam) addNextCanvas() {
 	p.canvas = &ImgCanvas{
 		padding: &stPadding{},
 	}
-	p.canvas.img = image.NewRGBA(image.Rect(0, 0, p.opt.Width, p.opt.Height)) // новая Canvas image.RGBA
+	p.canvas.Img = image.NewRGBA(image.Rect(0, 0, p.opt.Width, p.opt.Height)) // новая Canvas image.RGBA
 	p.drw = &font.Drawer{
-		Dst: p.canvas.img, // подключим ее
+		Dst: p.canvas.Img, // подключим ее
 		Src: p.opt.FgColor,
 		Face: truetype.NewFace(p.currentFont, &truetype.Options{
 			Size:    float64(p.opt.FontSize),
@@ -37,7 +37,7 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.padding.top = p.opt.Padding.top
 	p.canvas.padding.right = p.opt.Padding.right
 	p.canvas.round = p.opt.Round
-	p.canvas.gifDelay = p.opt.GifDelay
+	p.canvas.GifDelay = p.opt.GifDelay
 	// сразу сохраним Canvas в массиве
 	p.allCanvas = append(p.allCanvas, p.canvas)
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
@@ -46,7 +46,7 @@ func (p *stParam) addNextCanvas() {
 
 // --------------
 func drawCircle(p *stParam) {
-	ctx := gg.NewContextForRGBA(p.canvas.img)
+	ctx := gg.NewContextForRGBA(p.canvas.Img)
 	ctx.SetColor(color.Opaque)
 	ctx.DrawCircle(float64(p.opt.Padding.top), float64(p.opt.Padding.top/2), float64(p.opt.Padding.top/2)-2)
 	ctx.Fill()

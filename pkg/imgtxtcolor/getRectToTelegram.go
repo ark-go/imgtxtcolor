@@ -15,7 +15,7 @@ func getRectToTelegram(width, height float64) (float64, float64) {
 		return width, resHeight
 	} else {
 		cfWidth := height / 2.5
-		if cfWidth > height {
+		if cfWidth < height {
 			resWidth = cfWidth
 		} else {
 			resWidth = width

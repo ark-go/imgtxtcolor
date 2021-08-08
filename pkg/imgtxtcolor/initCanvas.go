@@ -52,12 +52,12 @@ const (
 )
 
 type ImgCanvas struct {
-	img           *image.RGBA
+	Img           *image.RGBA
 	padding       *stPadding
 	bgColor       color.RGBA
 	round         float64
 	alignVertical alignVertical
-	gifDelay      int
+	GifDelay      int
 }
 type stParam struct {
 	drw *font.Drawer
@@ -86,7 +86,7 @@ func (p *stParam) setFontSize(size int) {
 		size = 20
 	}
 	p.opt.FontSize = size    // сохраним выбор
-	if p.canvas.img != nil { // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
+	if p.canvas.Img != nil { // TODO первого может не быть? пока не появятся буквы мы не создаем Canvas
 		p.drw.Face = truetype.NewFace(p.currentFont, &truetype.Options{
 			Size:    float64(size),
 			Hinting: font.HintingFull,
@@ -166,13 +166,13 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 
 	setCurrentFont(&param, nil)
 
-	param.canvas.img = nil
+	param.canvas.Img = nil
 	param.drw = nil
 	return &param, err
 }
 
 func canvasSetBackground(param *stParam, col color.Color) {
-	ctx := gg.NewContextForRGBA(param.canvas.img)
+	ctx := gg.NewContextForRGBA(param.canvas.Img)
 
 	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.opt.Round))
 	//ctx.SetColor(param.opt.BgColor)

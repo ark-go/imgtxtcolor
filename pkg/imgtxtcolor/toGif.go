@@ -19,14 +19,14 @@ func (p *stParam) ToGif() {
 	palette2 = append(palette2, image.Transparent) // добавляем еще прозрачный
 	for i := 0; i < len(p.allCanvas); i++ {
 
-		img := p.allCanvas[i].img
+		img := p.allCanvas[i].Img
 		bounds := img.Bounds()
 
 		dst := image.NewPaletted(bounds, palette2)
 		draw.Draw(dst, bounds, img, bounds.Min, draw.Src)
 
 		images = append(images, dst)
-		delays = append(delays, p.allCanvas[i].gifDelay)
+		delays = append(delays, p.allCanvas[i].GifDelay)
 		disposals = append(disposals, gif.DisposalBackground)
 	}
 

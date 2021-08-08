@@ -4,8 +4,8 @@ import "golang.org/x/image/math/fixed"
 
 func drawLine2(param *stParam, word string) bool {
 	// новый Image если еще нет или требуют новый
-	if param.canvas.img == nil || param.isNewCanvas {
-		if len(word) > 0 || param.canvas.img == nil {
+	if param.canvas.Img == nil || param.isNewCanvas {
+		if len(word) > 0 || param.canvas.Img == nil {
 			param.addNextCanvas()
 		}
 	}

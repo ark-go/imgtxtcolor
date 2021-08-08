@@ -2,7 +2,6 @@ package main
 
 import (
 	"html/template"
-	"image"
 	"io/ioutil"
 	"log"
 	"path"
@@ -72,7 +71,7 @@ func main() {
 				}
 				defer f.Close()
 
-				png.Encode(f, imgCanvas)
+				png.Encode(f, imgCanvas.Img)
 				fimgNames = append(fimgNames, name)
 			}
 		}
@@ -98,7 +97,7 @@ func main() {
 	log.Println("Старт listen")
 	http.ListenAndServe(":3005", router)
 }
-func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*image.RGBA, error) {
+func createAvatar(sizeH, sizeW, fontSizeInt int, text string) ([]*imgtxtcolor.ImgCanvas, error) {
 	dir, _ := ioutil.ReadDir("internal/img")
 	for _, d := range dir {
 		os.RemoveAll(path.Join([]string{"internal/img", d.Name()}...))
