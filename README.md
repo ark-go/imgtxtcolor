@@ -20,20 +20,22 @@
 Следущие команды начнут новый Image, они должны указываться подряд в любом порядке с начала строки,
 между ними не должно быть текста, только пробелы, иначе будут создаваться новые страницы-image
 
-- alignH, alignV
-  - top
-  - center
-  - bottom
-- padding
-- paddingTop, top
+- alignH, alignV - выравнивание по вертикали
+  - top - кверху
+  - center - по центру
+  - bottom - к низу
+- padding - отступ сразу со всех сторон
+- paddingTop, top - отступ сверху
 - paddingLeft, left
 - paddingRigh, right
 - paddingBottom, bottom
 - round - радиус углов
   - auto или не число, радиус углов будет в половину размера paddingTop
 - bgcolor - цвет фона
-- width
-- height
+- maxWidth - (заменяет width) автоматически вычисляется до указанного предела, если текст превышает maxWidth он будет заворачиваться а картинка будет шириной maxWidth, если ширина текста меньше maxWidth картинка будет уменьшена по ширине
+- maxHeight - (заменяет height) то-же что и maxWidth, только по высоте
+- width - (заменяет maxWidth) фиксированая ширина
+- height - (заменяет maxHeight) фиксированная высота
 - rect:tg
 
 ### Завершить Image
@@ -43,3 +45,4 @@
 - break:page
 
 time:now - вставит время
+date:now - вставит дату

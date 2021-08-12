@@ -50,7 +50,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		}
 
 		if isBreak {
-			p.textAlignVertical() // перерисовка текста и заявка на новый Image
+			p.textAlign() // перерисовка текста и заявка на новый Image
 			isBreak = false
 		}
 		if p.isNewCanvas {
@@ -110,7 +110,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 	}
 	// если Break был на одельной строке и после него, в строке, не было текста
 	if isBreak {
-		p.textAlignVertical() // перерисовка текста и заявка на новый Image
+		p.textAlign() // перерисовка текста и заявка на новый Image
 		isBreak = false
 	}
 

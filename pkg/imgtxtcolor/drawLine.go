@@ -18,7 +18,7 @@ func (p *stParam) drawLine(text string) bool {
 
 	if ok := p.checkHeight(text); !ok { // у нас перебор по высоте
 		if len(text) > 0 { // есть текст
-			p.textAlignVertical()               // выравнивание по вертикали напечатанный Image
+			p.textAlign()                       // выравнивание по вертикали напечатанный Image
 			p.addNextCanvas()                   // добавим еще Canvas
 			if ok := p.checkHeight(text); !ok { // и снова перебор, говорим об ошибке
 				return false // нет места для строк
@@ -28,6 +28,8 @@ func (p *stParam) drawLine(text string) bool {
 			return true
 		}
 	}
+	p.canvas.setMaxX(p.drw.MeasureString(text))
+	p.canvas.setmaxY(p.textHeightSumm) // TODO Нужно прибавлять Descent  + p.drw.Face.Metrics().Descent
 	p.drw.DrawString(text)
 	return true
 }

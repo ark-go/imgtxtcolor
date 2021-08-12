@@ -52,13 +52,51 @@ const (
 )
 
 type ImgCanvas struct {
-	Img           *image.RGBA
-	padding       *stPadding
-	bgColor       color.RGBA
-	round         float64
+	parent *stParam
+	// Canvas
+	Img *image.RGBA
+	// padding
+	padding *stPadding
+	// цвет фона
+	bgColor color.RGBA
+	// радиус углов
+	round float64
+	// Вертикальное выравнивание
 	alignVertical alignVertical
-	GifDelay      int
+	// Горизонтальное выравнивание
+	alignHorizontal alignHorizontal
+	// задержка кадра, если использовать в gif / webp
+	GifDelay int
+	// максимальная ширина строки в этом Canvas
+	maxX fixed.Int26_6
+	// максимальная высота текста в этом Canvas
+	maxY fixed.Int26_6
+	// автоматическая ширина по тексту
+	autoWidth bool
+	// автоматическая высота по тексту
+	autoHeight bool
 }
+
+// если val больше AllMaxX заменяем
+func (c *ImgCanvas) setMaxX(val fixed.Int26_6) {
+	if val > c.maxX {
+		c.maxX = val
+	}
+	if c.maxX > c.parent.allMaxX {
+		c.parent.allMaxX = c.maxX
+	}
+}
+
+// если val больше AllMaxY заменяем
+func (c *ImgCanvas) setmaxY(val fixed.Int26_6) {
+	if val > c.maxY {
+		c.maxY = val
+	}
+	if c.maxY > c.parent.allMaxY {
+		c.parent.allMaxY = c.maxY
+	}
+}
+
 type stParam struct {
 	drw *font.Drawer
 	// текуший Image
@@ -70,7 +108,6 @@ type stParam struct {
 	border stBorder
 	//
 	textHeightSumm fixed.Int26_6 // для хранения высоты "курсора"
-	textWidthSumm  fixed.Int26_6 // TODO
 	textHeightTmp  fixed.Int26_6 // для расчета высоты строки
 	// массив нарисованных Image
 	allCanvas []*ImgCanvas //[]*image.RGBA
@@ -79,8 +116,11 @@ type stParam struct {
 	opt *stStartOptions
 	// сигнал о том что следущий вывод требует нового Image
 	isNewCanvas bool
+	allMaxX     fixed.Int26_6
+	allMaxY     fixed.Int26_6
 }
 
+// установка шрифта
 func (p *stParam) setFontSize(size int) {
 	if size < 1 {
 		size = 20
@@ -120,6 +160,10 @@ type stStartOptions struct {
 	LineSpacing int
 	// скругленные углы 0 - их нет
 	Round float64
+	// авто Height, ширина по тексту
+	AutoHeight bool
+	// авто Width, высота по тексту
+	AutoWidth bool
 }
 
 // Начальные установки по умолчанию
@@ -156,7 +200,6 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 		},
 		border:         stBorder{false, 10, 10, 10, 10},
 		textHeightSumm: fixed.I(0),
-		textWidthSumm:  fixed.I(0),
 		textHeightTmp:  fixed.I(0),
 		allCanvas:      []*ImgCanvas{},
 		palette:        make(map[color.RGBA]bool),

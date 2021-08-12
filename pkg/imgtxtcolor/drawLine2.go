@@ -9,8 +9,7 @@ func drawLine2(param *stParam, word string) bool {
 			param.addNextCanvas()
 		}
 	}
-	// вычислим на сколько продвинется "курсор" по горизонтали
-	param.textWidthSumm += param.drw.MeasureString(word)
+
 	// выясним меняется ли высота в строке
 	metric := param.drw.Face.Metrics()
 	if param.textHeightTmp < metric.Height+fixed.I(param.opt.LineSpacing) {
@@ -32,6 +31,7 @@ func drawLine2(param *stParam, word string) bool {
 	}
 
 	//log.Println("draw:", param.drw.Dot.Y)
+
 	param.drw.DrawString(word)
 	return true
 }

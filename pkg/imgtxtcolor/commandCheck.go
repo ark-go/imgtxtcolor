@@ -100,11 +100,25 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	case "width":
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Width = siz
+			p.opt.AutoWidth = false
 			return true, true
 		}
 	case "height":
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Height = siz
+			p.opt.AutoHeight = false
+			return true, true
+		}
+	case "maxwidth":
+		if siz, err := strconv.Atoi(str); err == nil {
+			p.opt.Width = siz
+			p.opt.AutoWidth = true
+			return true, true
+		}
+	case "maxheight":
+		if siz, err := strconv.Atoi(str); err == nil {
+			p.opt.Height = siz
+			p.opt.AutoHeight = true
 			return true, true
 		}
 	case "rect":
