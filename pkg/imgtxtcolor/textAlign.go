@@ -29,14 +29,23 @@ func (p *stParam) textAlign() {
 
 	canvasHeight := p.canvas.Img.Rect.Dy() // высота оригинала
 	canvasWidth := p.canvas.Img.Rect.Dx()
+	// вычисляем размеры
 	if p.canvas.autoHeight {
 		canvasHeight = p.canvas.padding.top + b.Dy() + p.canvas.padding.bottom
-
 	}
 	if p.canvas.autoWidth {
 		canvasWidth = p.canvas.padding.left + (xRight - xLeft) + p.canvas.padding.right
 	}
+
+	// новый Image, если нужен
 	if p.canvas.autoHeight || p.canvas.autoWidth {
+		// минимальные ограничения
+		if p.canvas.MinHeight > canvasHeight {
+			canvasHeight = p.canvas.MinHeight
+		}
+		if p.canvas.MinWidth > canvasWidth {
+			canvasWidth = p.canvas.MinWidth
+		}
 		// меняем размер оригинала под новый размер текста
 		p.canvas.Img = image.NewRGBA(image.Rect(0, 0, canvasWidth, canvasHeight))
 	}

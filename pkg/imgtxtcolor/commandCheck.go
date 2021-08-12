@@ -121,6 +121,16 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 			p.opt.AutoHeight = true
 			return true, true
 		}
+	case "minwidth":
+		if siz, err := strconv.Atoi(str); err == nil {
+			p.opt.MinWidth = siz
+			return true, true
+		}
+	case "minheight":
+		if siz, err := strconv.Atoi(str); err == nil {
+			p.opt.MinHeight = siz
+			return true, true
+		}
 	case "rect":
 		if str == "tg" {
 			width, height := getRectToTelegram(float64(p.opt.Width), float64(p.opt.Height))

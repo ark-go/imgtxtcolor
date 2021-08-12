@@ -41,6 +41,8 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.GifDelay = p.opt.GifDelay
 	p.canvas.autoHeight = p.opt.AutoHeight
 	p.canvas.autoWidth = p.opt.AutoWidth
+	p.canvas.MinWidth = p.opt.MinWidth
+	p.canvas.MinHeight = p.opt.MinHeight
 	// сразу сохраним Canvas в массиве
 	p.allCanvas = append(p.allCanvas, p.canvas)
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали

@@ -75,6 +75,10 @@ type ImgCanvas struct {
 	autoWidth bool
 	// автоматическая высота по тексту
 	autoHeight bool
+	// минимальная ширина
+	MinWidth int
+	// минимальная высота
+	MinHeight int
 }
 
 // если val больше AllMaxX заменяем
@@ -164,6 +168,10 @@ type stStartOptions struct {
 	AutoHeight bool
 	// авто Width, высота по тексту
 	AutoWidth bool
+	// минимальная ширина
+	MinWidth int
+	// минимальная высота
+	MinHeight int
 }
 
 // Начальные установки по умолчанию
@@ -171,6 +179,8 @@ func StartOption() *stStartOptions {
 	return &stStartOptions{
 		Width:           500,
 		Height:          350,
+		MinWidth:        5,
+		MinHeight:       5,
 		FontSize:        20,
 		FgColor:         &image.Uniform{C: colornames.Yellow},
 		BgColor:         colornames.Darkslategray,
