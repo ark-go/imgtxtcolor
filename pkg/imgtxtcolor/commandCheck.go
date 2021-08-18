@@ -1,7 +1,6 @@
 package imgtxtcolor
 
 import (
-	"image"
 	"image/color"
 	"strconv"
 	"strings"
@@ -9,6 +8,10 @@ import (
 	"golang.org/x/image/colornames"
 )
 
+// на входе значение и команда
+//	Выход:
+//	_cmd - подтверждает что это существующая команда
+//	_break - команда требует создания нового Image
 func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	isCmd := true
 	// str = strings.ToLower(str)  color,,???
@@ -42,13 +45,15 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		}
 		// fallthrough // Переходит на следующий иначе break
 	case "fontcolor", "color":
-		if col, ok := getColor(str); ok {
-			p.opt.FgColor = &image.Uniform{C: col}
-			p.palette[col] = true
+		// массив для градиента, если единственный элемент - цвет шрифта
+		if col, v, ok := getColorArr(p, str); ok {
+			p.opt.FontColor = col    // это массив
+			p.opt.FontGradient = col // и это массив
+			p.opt.FontGradVector = v
 			return true, false
 		}
 		if str == "transparent" {
-			p.opt.FgColor = &image.Uniform{C: color.RGBA{0, 0, 0, 0}}
+			p.opt.FontColor = []color.RGBA{{0, 0, 0, 0}}
 			return true, false
 		}
 	case "align":
@@ -86,14 +91,16 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		}
 	case "bgcolor":
 		// Только в начале текста, иначе все закрасит
-		if col, ok := getColor(str); ok {
+		// массив для градиента, если единственный элемент - цвет фона
+		if col, v, ok := getColorArr(p, str); ok {
 			p.isNewCanvas = true
-			p.opt.BgColor = col
-			p.palette[col] = true
+			p.opt.BgColor = col // это массив
+			p.opt.BgGragVector = v
+			//p.palette[col] = true
 			return true, true
 		}
 		if str == "transparent" {
-			p.opt.BgColor = color.RGBA{0, 0, 0, 0}
+			p.opt.BgColor = []color.RGBA{{0, 0, 0, 0}}
 			return true, true
 		}
 		return false, false
@@ -168,7 +175,48 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	return isCmd, false
 }
 
+func getColorArr(p *stParam, str string) ([]color.RGBA, string, bool) {
+	colArr := strings.Split(str, ":")
+
+	colArrRgba := []color.RGBA{}
+	if len(colArr) > 0 {
+		for i, val := range colArr {
+			if val == "" { // два двоеточия рядом породят пустую строку
+				return []color.RGBA{}, "", false
+			}
+			// проверим на символ X он разрешает писать команды к градиенту после цветов
+			if []rune(val)[0] == 'V' { // vector
+
+				if len(colArrRgba) > 1 {
+					vec := colArr[i:]
+					if len(vec) == 5 {
+						return colArrRgba, strings.Join(vec[1:], ":"), true
+					} else {
+						return []color.RGBA{}, "", false
+					}
+				}
+			}
+			// добавляем цвет если смогли его определить
+			if colR, ok := getColor(val); ok {
+				colArrRgba = append(colArrRgba, colR)
+				continue
+			} else {
+				return []color.RGBA{}, "", false
+			}
+		}
+		return colArrRgba, "", true
+	} else {
+		return []color.RGBA{}, "", false
+	}
+
+}
+
+// Приводим название цвета или его код # ffffff  к color.RGBA
+//	если не получится то возвращаем false
 func getColor(str string) (color.RGBA, bool) {
+	if str == "" {
+		return color.RGBA{}, false
+	}
 	if str[0] == '#' {
 		if col, err := hexToRGBA(str); err != nil {
 			return color.RGBA{}, false

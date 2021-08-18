@@ -54,8 +54,3 @@ func hexToRGBA(hex string) (color.RGBA, error) {
 	}
 	return rgba, err
 }
-
-// bgColor, err := .hexToRGBA("#060abc")
-// if err != nil {
-// 	log.Fatal(err)
-// }

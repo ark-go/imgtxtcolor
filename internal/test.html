@@ -12,19 +12,33 @@
       <form method="GET" action="avatar">
         <label>fontSizeInt</label><br />
         <input
+          style="width: 4em"
           type="number"
           name="fontSizeInt"
           value="{{ .FontSize}}"
-        /><br /><br />
+        /><br />
         <label>sizeH</label><br />
-        <input type="number" name="sizeH" value="{{ .SizeH}}" /><br /><br />
+        <input
+          style="width: 4em"
+          type="number"
+          name="sizeH"
+          value="{{ .SizeH}}"
+        /><br />
         <label>sizeW</label><br />
-        <input type="number" name="sizeW" value="{{ .SizeW}}" /><br /><br />
+        <input
+          style="width: 4em"
+          type="number"
+          name="sizeW"
+          value="{{ .SizeW}}"
+        /><br />
         <label>Текст</label><br />
         <textarea cols="100" rows="20" type="text" name="initials">
 {{ .Initials}}</textarea
         ><br /><br />
-        <input type="submit" value="Отправить" /><br />
+        <div style="text-align: center">
+          <input type="submit" value="Отправить" />
+        </div>
+        <br />
         <img src="img/test.gif" alt="я джифка" />
       </form>
       <div
@@ -32,13 +46,14 @@
           display: flex;
           flex-direction: column;
           width: 100%;
-          justify-content: center;
+          /*  justify-content: center; */
           align-items: center;
         "
       >
         <!-- <img src="img 10.png" /> -->
         {{range .FimagNames}}
-        <img src="img/{{ . }}" />. {{end}}
+        <img src="img/{{ . }}" />. {{end}} {{range .FimageBase64}}
+        <img src="data:image/png;base64,{{ . }}" />. {{end}}
       </div>
     </div>
   </body>

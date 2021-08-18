@@ -1,6 +1,8 @@
 package imgtxtcolor
 
 import (
+	"image"
+
 	"golang.org/x/image/math/fixed"
 )
 
@@ -14,7 +16,7 @@ func (p *stParam) drawLine(text string) bool {
 		p.addNextCanvas()
 	}
 
-	p.drw.Src = p.opt.FgColor
+	p.drw.Src = &image.Uniform{C: p.opt.FontColor[0]}
 
 	if ok := p.checkHeight(text); !ok { // у нас перебор по высоте
 		if len(text) > 0 { // есть текст

@@ -4,7 +4,6 @@ import (
 	"image"
 	"image/color"
 
-	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
@@ -19,7 +18,7 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.Img = image.NewRGBA(image.Rect(0, 0, p.opt.Width, p.opt.Height)) // новая Canvas image.RGBA
 	p.drw = &font.Drawer{
 		Dst: p.canvas.Img, // подключим ее
-		Src: p.opt.FgColor,
+		Src: &image.Uniform{C: p.opt.FontColor[0]},
 		Face: truetype.NewFace(p.currentFont, &truetype.Options{
 			Size:    float64(p.opt.FontSize),
 			Hinting: font.HintingFull,
@@ -43,6 +42,9 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.autoWidth = p.opt.AutoWidth
 	p.canvas.MinWidth = p.opt.MinWidth
 	p.canvas.MinHeight = p.opt.MinHeight
+	p.canvas.fontGradient = p.opt.FontGradient
+	p.canvas.fontGradVector = p.opt.FontGradVector
+	p.canvas.bgGragVector = p.opt.BgGragVector
 	// сразу сохраним Canvas в массиве
 	p.allCanvas = append(p.allCanvas, p.canvas)
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
@@ -51,10 +53,10 @@ func (p *stParam) addNextCanvas() {
 }
 
 // --------------
-func drawCircle(p *stParam) {
-	ctx := gg.NewContextForRGBA(p.canvas.Img)
-	ctx.SetColor(color.Opaque)
-	ctx.DrawCircle(float64(p.opt.Padding.top), float64(p.opt.Padding.top/2), float64(p.opt.Padding.top/2)-2)
-	ctx.Fill()
-	//ctx.ResetClip()
-}
+// func drawCircle(p *stParam) {
+// 	ctx := gg.NewContextForRGBA(p.canvas.Img)
+// 	ctx.SetColor(color.Opaque)
+// 	ctx.DrawCircle(float64(p.opt.Padding.top), float64(p.opt.Padding.top/2), float64(p.opt.Padding.top/2)-2)
+// 	ctx.Fill()
+// 	//ctx.ResetClip()
+// }

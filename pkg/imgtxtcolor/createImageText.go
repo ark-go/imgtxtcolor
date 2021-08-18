@@ -87,9 +87,5 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 	if param.opt.GifFileName != "" {
 		param.ToGif()
 	}
-	// ret := []*image.RGBA{}
-	// for i := 0; i < len(param.allCanvas); i++ {
-	// 	ret = append(ret, param.allCanvas[i].Img)
-	// }
 	return param.allCanvas, err
 }

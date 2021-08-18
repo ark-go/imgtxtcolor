@@ -1,13 +1,21 @@
 package imgtxtcolor
 
 import (
+	"errors"
 	"image"
+	"image/color"
 	"image/draw"
+	"strconv"
+	"strings"
 
 	"github.com/fogleman/gg"
 )
 
 func (p *stParam) textAlign() {
+	p.textAlign2(p.canvas.Img)
+}
+
+func (p *stParam) textAlign2(img *image.RGBA) {
 	if p.canvas != nil && p.canvas.Img == nil {
 		// если приходим сюда без Canvas, значит это первый вход
 		// и еще не было текста, а только пустые строки, поэтому Canvas еще не создавался
@@ -24,8 +32,24 @@ func (p *stParam) textAlign() {
 
 	// создадим новый Image, для нашего вырезанного текста
 	textCrop := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
-	// вставим m в новый Image
+	// ctxTxt := gg.NewContext(b.Dx(), b.Dy())
+	// ctxTxt.DrawImage(m, 0, 0)
+
+	// вставим m text в новый Image
 	draw.Draw(textCrop, textCrop.Bounds(), m, b.Min, draw.Src)
+	// gradient
+	if len(p.canvas.fontGradient) > 1 {
+		ctxText := gg.NewContextForRGBA(textCrop)
+		mask := ctxText.AsMask()
+		//g := gg.NewLinearGradient(0, 0, float64(m.Bounds().Dx()), float64(m.Bounds().Dy()))
+		gradient(ctxText, p.canvas.fontGradient, p.canvas.fontGradVector)
+		//ctxText.SetFillStyle(g)
+		// Используя маску, заливаем контекст градиентом
+		ctxText.SetMask(mask)
+		ctxText.DrawRectangle(0, 0, float64(m.Bounds().Dx()), float64(m.Bounds().Dy()))
+		ctxText.Fill()
+	}
+	// end gradient
 
 	canvasHeight := p.canvas.Img.Rect.Dy() // высота оригинала
 	canvasWidth := p.canvas.Img.Rect.Dx()
@@ -79,8 +103,14 @@ func (p *stParam) textAlign() {
 	ctx := gg.NewContextForRGBA(p.canvas.Img)
 	ctx.Clear()
 	ctx.DrawRoundedRectangle(0, 0, float64(canvasWidth), float64(canvasHeight), float64(p.canvas.round))
-	ctx.SetColor(p.canvas.bgColor)
+	if len(p.canvas.bgColor) > 1 {
+		gradient(ctx, p.canvas.bgColor, p.canvas.bgGragVector)
+	} else if len(p.canvas.bgColor) > 0 {
+		ctx.SetColor(p.canvas.bgColor[0])
+	}
+
 	ctx.Fill()
+
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
 	draw.Draw(p.canvas.Img, p.canvas.Img.Bounds(), textCrop, pointSP, draw.Over)
 
@@ -88,36 +118,7 @@ func (p *stParam) textAlign() {
 
 }
 
-// поиск не пустых ячеек снизу, т.е. окончание напечатанного текста
-// func (p *stParam) getBottomBorder() int {
-// 	// At(Bounds().Min.X, Bounds().Min.Y)   возвращает верхний левый пиксель сетки.
-// 	// At(Bounds().Max.X-1, Bounds().Max.Y-1)  возвращает нижний правый.
-// 	//var u = color.RGBA{0, 0, 0, 0} // Transparent
-// 	//if p.canvas.autoHeight {
-// 	// впринципе этот блок можно убрать совсем
-// 	// здесь мы дополнительно удалим лишние пустые строки
-// 	// но мы не //TODO
-// 	var h int
-// 	for i := p.canvas.Img.Bounds().Max.Y - 1; i > p.canvas.Img.Bounds().Min.Y; i-- { // Y
-// 		for j := p.canvas.Img.Bounds().Min.X; j < p.canvas.Img.Bounds().Max.X-1; j++ { // X
-// 			if r, g, b, a := p.canvas.Img.At(j, i).RGBA(); r == 0 && g == 0 && b == 0 && a == 0 {
-// 				h++
-// 			} else {
-// 				//log.Println("y:", i+1)
-// 				return i + 1
-// 			}
-// 		}
-// 	}
-// 	// log.Println("пустые:", h, h2)
-// 	return 0
-// 	// } else {
-// 	// 	 здесь по размер по размеру строк, вместе с пустыми, расчитано по мере печати
-// 	// 	y := p.canvas.maxY + p.drw.Face.Metrics().Descent
-// 	// 	log.Println("y:", y.Ceil())
-// 	// 	return y.Ceil() + p.canvas.padding.top
-// 	// }
-// }
-
+// ищет начало пустоты в конце текста
 func getBottomText(p *stParam, c chan int) {
 	for i := p.canvas.Img.Bounds().Max.Y - 1; i > p.canvas.Img.Bounds().Min.Y; i-- { // Y
 		for j := p.canvas.Img.Bounds().Min.X; j < p.canvas.Img.Bounds().Max.X-1; j++ { // X
@@ -129,6 +130,8 @@ func getBottomText(p *stParam, c chan int) {
 	}
 	c <- 0
 }
+
+// ищет начало текста сверху
 func getTopText(p *stParam, c chan int) {
 	for i := p.canvas.Img.Bounds().Min.Y; i < p.canvas.Img.Bounds().Max.Y-1; i++ { // Y
 		for j := p.canvas.Img.Bounds().Min.X; j < p.canvas.Img.Bounds().Max.X-1; j++ { // X
@@ -140,6 +143,8 @@ func getTopText(p *stParam, c chan int) {
 	}
 	c <- 0
 }
+
+// ищет начало текста слева
 func getLeftText(p *stParam, c chan int) {
 	for i := p.canvas.Img.Bounds().Min.X; i < p.canvas.Img.Bounds().Max.X-1; i++ { // X
 		for j := p.canvas.Img.Bounds().Min.Y; j < p.canvas.Img.Bounds().Max.Y-1; j++ {
@@ -152,6 +157,7 @@ func getLeftText(p *stParam, c chan int) {
 	c <- 0
 }
 
+// ищет конец текста справа
 func getRightText(p *stParam, c chan int) {
 	for i := p.canvas.Img.Bounds().Max.X - 1; i > p.canvas.Img.Bounds().Min.X; i-- { // X
 		for j := p.canvas.Img.Bounds().Min.Y; j < p.canvas.Img.Bounds().Max.Y-1; j++ {
@@ -164,6 +170,8 @@ func getRightText(p *stParam, c chan int) {
 	c <- 0
 }
 
+// вырезает прямоугольник занятый текстом отбрасывая пустоту вокруг
+//	на прозрачном фоне rgba = 0.0.0.0
 func getRectText(p *stParam) (yTop, yBottom, xLeft, xRight int) {
 
 	top := make(chan int)
@@ -191,6 +199,50 @@ func getRectText(p *stParam) (yTop, yBottom, xLeft, xRight int) {
 	return
 }
 
-// func getNewDy(p *stParam){
+func gradient(ctx *gg.Context, colors []color.RGBA, vector string) error {
+	if len(colors) < 2 {
+		return errors.New("в градиенте должно быть больше одного цвета")
+	}
+	step := float32(1) / float32(len(colors)-1)
+	xTop := ctx.Image().Bounds().Dx() / 2
+	var grad gg.Gradient
+	if vector != "" {
+		//parseVector(ctx, vector)
+		grad = gg.NewLinearGradient(parseVector(ctx, vector))
+	} else {
+		grad = gg.NewLinearGradient(float64(xTop), 0, float64(xTop), float64(ctx.Image().Bounds().Dy()))
+	}
+	stepNum := float32(0)
+	for i := 0; i < len(colors)-1; i++ {
+		grad.AddColorStop(float64(stepNum), colors[i])
+		stepNum += step
+	}
+	grad.AddColorStop(float64(1), colors[len(colors)-1])
+	ctx.SetFillStyle(grad)
+	return nil
+}
 
-// }
+//направление для градиента
+//	разбор строки 0:0:0:0 в float64
+func parseVector(ctx *gg.Context, vector string) (x0 float64, y0 float64, x1 float64, y1 float64) {
+	a := strings.Split(vector, ":")
+	rect := ctx.Image().Bounds()
+	if len(a) == 4 {
+		if f1, err := strconv.ParseFloat(a[0], 64); err == nil {
+			if f2, err := strconv.ParseFloat(a[1], 64); err == nil {
+				if f3, err := strconv.ParseFloat(a[2], 64); err == nil {
+					if f4, err := strconv.ParseFloat(a[3], 64); err == nil {
+						x0 := float64(rect.Dx()) / 100 * f1
+						y0 := float64(rect.Dy()) / 100 * f2
+						x1 := float64(rect.Dx()) / 100 * f3
+						y1 := float64(rect.Dy()) / 100 * f4
+						return x0, y0, x1, y1
+					}
+				}
+			}
+		}
+	}
+	log.Println("не удалось распарсить направление градиента")
+	xTop := ctx.Image().Bounds().Dx() / 2
+	return float64(xTop), 0, float64(xTop), float64(ctx.Image().Bounds().Dy())
+}

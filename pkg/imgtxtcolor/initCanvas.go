@@ -9,6 +9,7 @@ import (
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/gofont/gobold"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
 )
@@ -58,7 +59,10 @@ type ImgCanvas struct {
 	// padding
 	padding *stPadding
 	// цвет фона
-	bgColor color.RGBA
+	bgColor        []color.RGBA
+	bgGragVector   string
+	fontGradient   []color.RGBA
+	fontGradVector string
 	// радиус углов
 	round float64
 	// Вертикальное выравнивание
@@ -147,9 +151,12 @@ type stStartOptions struct {
 	// Размер шрифта
 	FontSize int
 	// цвет шрифта
-	FgColor *image.Uniform
+	FontColor []color.RGBA
 	// цвет фона
-	BgColor color.RGBA
+	BgColor        []color.RGBA
+	BgGragVector   string
+	FontGradient   []color.RGBA
+	FontGradVector string
 	// по высоте
 	AlignVertical alignVertical
 	// по горизонтали
@@ -182,8 +189,8 @@ func StartOption() *stStartOptions {
 		MinWidth:        5,
 		MinHeight:       5,
 		FontSize:        20,
-		FgColor:         &image.Uniform{C: colornames.Yellow},
-		BgColor:         colornames.Darkslategray,
+		FontColor:       []color.RGBA{colornames.Yellow},
+		BgColor:         []color.RGBA{colornames.Darkslategray},
 		AlignVertical:   AlignVerticalCenter,
 		AlignHorizontal: AlignHorizontalCenter,
 		GifFileName:     "",
@@ -217,7 +224,7 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 		isNewCanvas:    true,
 	}
 
-	setCurrentFont(&param, nil)
+	param.setCurrentFont(nil)
 
 	param.canvas.Img = nil
 	param.drw = nil
@@ -226,23 +233,22 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 
 func canvasSetBackground(param *stParam, col color.Color) {
 	ctx := gg.NewContextForRGBA(param.canvas.Img)
-
 	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.opt.Round))
-	//ctx.SetColor(param.opt.BgColor)
 	ctx.SetColor(col)
 	ctx.Fill()
 }
 
 // Установка Font (goregular.TTF)
 // 	font установить в nil  // TODO сделать возможность выбора шрифта
-func setCurrentFont(param *stParam, font []byte) {
+func (p *stParam) setCurrentFont(font []byte) {
 	if font == nil {
 		font = goregular.TTF
+		_ = gobold.TTF
 	}
 	if fontFace, err := freetype.ParseFont(font); err == nil {
-		param.currentFont = fontFace
+		p.currentFont = fontFace
 	} else {
 		log.Println("Ошибка при загрузке шрифта")
-		param.currentFont = nil
+		p.currentFont = nil
 	}
 }
