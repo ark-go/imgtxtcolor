@@ -9,8 +9,8 @@
   <body style="background-color: beige">
     <h2>Ввод данных</h2>
     <div style="display: flex">
-      <form method="GET" action="avatar">
-        <label>fontSizeInt</label><br />
+      <form method="POST" action="avatar">
+        <!-- <label>fontSizeInt</label><br />
         <input
           style="width: 4em"
           type="number"
@@ -30,12 +30,16 @@
           type="number"
           name="sizeW"
           value="{{ .SizeW}}"
-        /><br />
+        /> 
+        <br />-->
         <label>Текст</label><br />
-        <textarea cols="100" rows="20" type="text" name="initials">
+        
+        <textarea id="text" cols="100" rows="20" type="text" name="initials">
 {{ .Initials}}</textarea
         ><br /><br />
         <div style="text-align: center">
+          <input type="checkbox" name="save">Сохранить</input>
+          <input type="checkbox" name="load">Прочитать</input>
           <input type="submit" value="Отправить" />
         </div>
         <br />

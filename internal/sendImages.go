@@ -30,13 +30,40 @@ func getParamInt(r *http.Request, nameKey string, def int) int {
 func sendImages(w http.ResponseWriter, r *http.Request) {
 	log.Println("Запрос..")
 	initials := r.FormValue("initials")
-	sizeH := getParamInt(r, "sizeH", 300)
-	sizeW := getParamInt(r, "sizeW", 500)
-	fontSizeInt := getParamInt(r, "fontSizeInt", 20)
+	isSave := r.FormValue("save")
+	isLoad := r.FormValue("load")
+	// sizeH := getParamInt(r, "sizeH", 300)
+	// sizeW := getParamInt(r, "sizeW", 500)
+	// fontSizeInt := getParamInt(r, "fontSizeInt", 20)
+	if isSave == "on" {
+		f, err := os.Create("internal/test.txt")
+		if err != nil {
+			log.Println("Ошибка записи test.txt")
+		}
+		defer f.Close()
+
+		_, err = f.WriteString(initials)
+		if err != nil {
+			log.Println("Ошибка записи test.txt")
+		}
+	}
+	if isLoad == "on" {
+		f, err := os.Open("internal/test.txt")
+		if err != nil {
+			log.Println("Ошибка открытия test.txt")
+		}
+		defer f.Close()
+
+		txtbyte, err := ioutil.ReadFile("internal/test.txt")
+		initials = string(txtbyte)
+		if err != nil {
+			log.Println("Ошибка чтения test.txt")
+		}
+	}
 	fimgNames := []string{}
 	var img64 []string
 	os.MkdirAll("internal/img/", os.ModePerm)
-	avatar, err := createImages(sizeH, sizeW, fontSizeInt, initials)
+	avatar, err := createImages(initials)
 	if err != nil {
 		input, err := ioutil.ReadFile("internal/errormsg/error.png")
 		if err != nil {
@@ -96,15 +123,15 @@ func sendImages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	data := ViewData{
-		SizeW:        sizeW,
-		SizeH:        sizeH,
-		Initials:     initials,
-		FontSize:     fontSizeInt,
+		// SizeW:        sizeW,
+		// SizeH:        sizeH,
+		Initials: initials,
+		// FontSize:     fontSizeInt,
 		FimagNames:   fimgNames,
 		FimageBase64: img64,
 	}
 	tmpl, _ := template.ParseFiles("internal/test.html")
 	tmpl.Execute(w, data)
 	//http.ServeFile(w, r, "internal/test.html")
-	log.Println("Слушаем порт 3005  https://127.0.0.1:3005/avatar")
+	log.Println("Слушаем порт 3005")
 }

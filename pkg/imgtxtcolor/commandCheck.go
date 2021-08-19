@@ -47,8 +47,7 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	case "fontcolor", "color":
 		// массив для градиента, если единственный элемент - цвет шрифта
 		if col, v, ok := getColorArr(p, str); ok {
-			p.opt.FontColor = col    // это массив
-			p.opt.FontGradient = col // и это массив
+			p.opt.FontColor = col // это массив
 			p.opt.FontGradVector = v
 			return true, false
 		}

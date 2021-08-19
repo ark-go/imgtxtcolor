@@ -5,7 +5,7 @@ import (
 )
 
 func main() {
-	internal.StartHttpServer(true)
+	internal.StartHttpServer(false)
 	//router.Use(middleware.Logger)
 	//http.ListenAndServe(":3005", router)
 }

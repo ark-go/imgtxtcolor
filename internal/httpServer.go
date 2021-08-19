@@ -15,6 +15,7 @@ func StartHttpServer(https bool) {
 	router.Use(redirectHttps)
 	router.Get("/start", start)
 	router.Get("/avatar", sendImages)
+	router.Post("/avatar", sendImages)
 	router.Get("/img/{name}", func(w http.ResponseWriter, r *http.Request) {
 		val := chi.URLParam(r, "name")
 		http.ServeFile(w, r, "internal/img/"+val)

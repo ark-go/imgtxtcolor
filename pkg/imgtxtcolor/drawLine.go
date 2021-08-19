@@ -20,7 +20,8 @@ func (p *stParam) drawLine(text string) bool {
 
 	if ok := p.checkHeight(text); !ok { // у нас перебор по высоте
 		if len(text) > 0 { // есть текст
-			p.textAlign()                       // выравнивание по вертикали напечатанный Image
+			//p.textAlign()                       // выравнивание по вертикали напечатанный Image
+			p.isNewCanvas = true
 			p.addNextCanvas()                   // добавим еще Canvas
 			if ok := p.checkHeight(text); !ok { // и снова перебор, говорим об ошибке
 				return false // нет места для строк

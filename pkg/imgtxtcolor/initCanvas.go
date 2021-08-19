@@ -61,7 +61,7 @@ type ImgCanvas struct {
 	// цвет фона
 	bgColor        []color.RGBA
 	bgGragVector   string
-	fontGradient   []color.RGBA
+	fontColor      []color.RGBA
 	fontGradVector string
 	// радиус углов
 	round float64
@@ -155,7 +155,6 @@ type stStartOptions struct {
 	// цвет фона
 	BgColor        []color.RGBA
 	BgGragVector   string
-	FontGradient   []color.RGBA
 	FontGradVector string
 	// по высоте
 	AlignVertical alignVertical

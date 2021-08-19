@@ -83,9 +83,13 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 			return nil, err
 		}
 	}
-	param.textAlign() // последний Canvas
+	//param.textAlign() // последний Canvas
+	param.isNewCanvas = true
+	param.formatAllCanvas()
+
 	if param.opt.GifFileName != "" {
 		param.ToGif()
 	}
+
 	return param.allCanvas, err
 }

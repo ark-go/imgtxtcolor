@@ -42,7 +42,7 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.autoWidth = p.opt.AutoWidth
 	p.canvas.MinWidth = p.opt.MinWidth
 	p.canvas.MinHeight = p.opt.MinHeight
-	p.canvas.fontGradient = p.opt.FontGradient
+	p.canvas.fontColor = p.opt.FontColor
 	p.canvas.fontGradVector = p.opt.FontGradVector
 	p.canvas.bgGragVector = p.opt.BgGragVector
 	// сразу сохраним Canvas в массиве
