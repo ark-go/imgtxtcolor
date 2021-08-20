@@ -21,8 +21,8 @@ func createImages(text string) ([]*imgtxtcolor.ImgCanvas, error) {
 	opt.GifFileName = "internal/img/test.gif"
 	opt.GifDelay = 100 * 1
 
+	//canvasArr, err := imgtxtcolor.CreateImageText(text, opt) //.CreateImageTextLog(text, opt, imgtxtcolor.LogFileAndConsole)
 	canvasArr, err := imgtxtcolor.CreateImageTextLog(text, opt, imgtxtcolor.LogFileAndConsole)
-
 	if err != nil {
 		return nil, err
 	}

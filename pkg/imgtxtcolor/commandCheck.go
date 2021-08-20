@@ -2,6 +2,7 @@ package imgtxtcolor
 
 import (
 	"image/color"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -16,25 +17,51 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 	isCmd := true
 	// str = strings.ToLower(str)  color,,???
 	if strings.HasPrefix(strings.ToLower(cmd), "padding") {
+
 		siz, err := strconv.Atoi(str)
 		if err != nil || siz < 0 {
+			//	if !checkPaddingFrame(p, str) {
 			return false, false
+			// } else {
+			// 	return true, true
+			// }
 		}
-		switch strings.ToLower(cmd) {
-		case "padding":
-			p.opt.Padding.setAll(siz)
-		case "paddingtop":
-			p.opt.Padding.top = siz
-		case "paddingleft":
-			p.opt.Padding.left = siz
-		case "paddingright":
-			p.opt.Padding.right = siz
-		case "paddingbottom":
-			p.opt.Padding.bottom = siz
-		default:
-			return false, false
+		if p.opt.FrameFilePath == "" {
+			switch strings.ToLower(cmd) {
+			case "padding":
+				p.opt.Padding.setAll(siz)
+			case "paddingtop":
+				p.opt.Padding.top = siz
+			case "paddingleft":
+				p.opt.Padding.left = siz
+			case "paddingright":
+				p.opt.Padding.right = siz
+			case "paddingbottom":
+				p.opt.Padding.bottom = siz
+			default:
+				return false, false
+			}
+			return true, true
+		} else {
+			switch strings.ToLower(cmd) {
+			case "padding":
+				p.opt.Padding.top += siz
+				p.opt.Padding.left += siz
+				p.opt.Padding.right += siz
+				p.opt.Padding.bottom += siz
+			case "paddingtop":
+				p.opt.Padding.top += siz
+			case "paddingleft":
+				p.opt.Padding.left += siz
+			case "paddingright":
+				p.opt.Padding.right += siz
+			case "paddingbottom":
+				p.opt.Padding.bottom += siz
+			default:
+				return false, false
+			}
+			return true, true
 		}
-		return true, true
 	}
 	//----------------------------------------------
 	switch strings.ToLower(cmd) {
@@ -107,24 +134,28 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Width = siz
 			p.opt.AutoWidth = false
+			checkPaddingFrame(p)
 			return true, true
 		}
 	case "height":
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Height = siz
 			p.opt.AutoHeight = false
+			checkPaddingFrame(p)
 			return true, true
 		}
 	case "maxwidth":
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Width = siz
 			p.opt.AutoWidth = true
+			checkPaddingFrame(p)
 			return true, true
 		}
 	case "maxheight":
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Height = siz
 			p.opt.AutoHeight = true
+			checkPaddingFrame(p)
 			return true, true
 		}
 	case "minwidth":
@@ -167,6 +198,18 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 			isCmd = false // не засчитали команду
 		}
 		return isCmd, false
+	case "frame":
+		strp := filepath.Join(p.opt.FrameDir, str+".png")
+
+		if fileExists(strp) {
+			p.opt.FrameFilePath = strp
+			checkPaddingFrame(p)
+			return true, true
+		} else {
+			// не фиксируем ошибку
+			p.opt.FrameFilePath = ""
+			return true, false // да сотрем, но ничего не установим т.е. новый Image не требуется
+		}
 	default:
 		isCmd = false // не засчитали команду
 

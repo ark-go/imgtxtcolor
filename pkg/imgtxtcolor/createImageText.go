@@ -68,7 +68,8 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 		defer f.Close()
 	}
 
-	defer duration(track("Все"))  // меряем время
+	defer duration(track("Все")) // меряем время
+	startTime := time.Now()
 	param, err := initCanvas(opt) // инициализация параметров
 	if err != nil {
 		return nil, err
@@ -85,11 +86,12 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 	}
 	//param.textAlign() // последний Canvas
 	param.isNewCanvas = true
+	log.Printf("Time [%v]: %v\n", "Текст пройден", time.Since(startTime))
 	param.formatAllCanvas()
-
+	log.Printf("Time [%v]: %v\n", "Формат пройден", time.Since(startTime))
 	if param.opt.GifFileName != "" {
 		param.ToGif()
 	}
-
+	log.Printf("Time [%v]: %v\n", "Gif создан", time.Since(startTime))
 	return param.allCanvas, err
 }

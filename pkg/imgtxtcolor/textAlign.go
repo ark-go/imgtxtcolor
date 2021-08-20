@@ -94,20 +94,26 @@ func (canvas *ImgCanvas) formatCanvas(wg *sync.WaitGroup) {
 	var top int
 	switch canvas.alignVertical {
 	case AlignVerticalCenter:
-		iHeight := canvasHeight          // высота оригинала
-		iHeightTxt := textHeight         // - canvas.padding.top // высота текста без верхнего padding
-		top = (iHeight - iHeightTxt) / 2 // половина свободного места
+		//iHeight := canvasHeight          // высота оригинала
+		iHeight := canvasHeight - canvas.padding.top - canvas.padding.bottom // рабочая зона
+		//	iHeightTxt := textHeight         // - canvas.padding.top // высота текста
+		top = (iHeight - textHeight) / 2 // половина свободного места TODO:
+		top += canvas.padding.top
 	case AlignVerticalBottom:
-		iHeight := canvasHeight                              // высота Canvas
-		iHeightTxt := textHeight                             // - canvas.padding.top        // нижняя граница текста минус top padding
-		top = (iHeight - iHeightTxt) - canvas.padding.bottom // все свободное место минус padding-bottom
+		//	iHeight := canvasHeight                              // высота Canvas
+		//	iHeightTxt := textHeight                             // - canvas.padding.top        //
+		top = canvasHeight - textHeight - canvas.padding.bottom // все место - размер текста - padding-bottom
 	case AlignVerticalTop:
 		top = canvas.padding.top
 	}
 	var offsetLeft int
 	switch canvas.alignHorizontal {
 	case AlignHorizontalCenter:
-		offsetLeft = (canvas.Img.Rect.Dx() - textCrop.Rect.Dx()) / 2
+		iWidth := canvasWidth - canvas.padding.left - canvas.padding.right
+		iWidthTxt := textCrop.Rect.Dx()
+		offsetLeft = (iWidth - iWidthTxt) / 2
+		offsetLeft += canvas.padding.left
+	//offsetLeft = (canvas.Img.Rect.Dx() - textCrop.Rect.Dx()) / 2 // TODO:
 	case AlignHorizontalRight:
 		offsetLeft = canvas.Img.Rect.Dx() - textCrop.Rect.Dx() - canvas.padding.right
 	case AlignHorizontalLeft:
@@ -128,6 +134,11 @@ func (canvas *ImgCanvas) formatCanvas(wg *sync.WaitGroup) {
 
 	ctx.Fill()
 
+	// /home/arkadii/ProjectsGo/canvas/frame408x292.png
+	if canvas.frameFilePath != "" {
+		setFrame(canvas, canvas.frameFilePath) //frame408x292.png
+		//setFrameAroundImg(canvas, canvas.frameFilePath)
+	}
 	// sp? 4-й параметр. точка совмещения она совместится с dest в точке 0.0 и все съедет относительно точки
 	draw.Draw(canvas.Img, canvas.Img.Bounds(), textCrop, pointSP, draw.Over)
 }

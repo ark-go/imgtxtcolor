@@ -3,6 +3,8 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
+	"os"
+	"path/filepath"
 
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype"
@@ -83,6 +85,8 @@ type ImgCanvas struct {
 	MinWidth int
 	// минимальная высота
 	MinHeight int
+	// frame path  путь к рамке
+	frameFilePath string
 }
 
 // если val больше AllMaxX заменяем
@@ -160,7 +164,7 @@ type stStartOptions struct {
 	AlignVertical alignVertical
 	// по горизонтали
 	AlignHorizontal alignHorizontal
-	// gif - file name если не задан не будет создаваться
+	// gif file name path если не задан? gif не будет создаваться
 	GifFileName string
 	// gif delay  1/100 sec
 	GifDelay int
@@ -178,10 +182,20 @@ type stStartOptions struct {
 	MinWidth int
 	// минимальная высота
 	MinHeight int
+	// Каталог для фреймов рамок
+	FrameDir string
+	// Файл рамки, текущий, убедитесь что путь существует!!!
+	FrameFilePath string
 }
 
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
+	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		log.Fatalln("не определить рабочий каталог")
+
+	}
+
 	return &stStartOptions{
 		Width:           500,
 		Height:          350,
@@ -201,9 +215,13 @@ func StartOption() *stStartOptions {
 			bottom: 20,
 		},
 		LineSpacing: 2,
+		//путь
+		FrameDir:      filepath.Join(rootDir, "frame"),
+		FrameFilePath: "",
 		// скругленные углы
 		Round: 0,
 	}
+
 }
 func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	if startOption == nil {

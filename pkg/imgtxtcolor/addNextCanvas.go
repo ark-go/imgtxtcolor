@@ -45,6 +45,7 @@ func (p *stParam) addNextCanvas() {
 	p.canvas.fontColor = p.opt.FontColor
 	p.canvas.fontGradVector = p.opt.FontGradVector
 	p.canvas.bgGragVector = p.opt.BgGragVector
+	p.canvas.frameFilePath = p.opt.FrameFilePath
 	// сразу сохраним Canvas в массиве
 	p.allCanvas = append(p.allCanvas, p.canvas)
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
