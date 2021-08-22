@@ -188,9 +188,12 @@ type stStartOptions struct {
 	FrameFilePath string
 }
 
+var rootDir string
+
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	var err error
+	rootDir, err = filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
 		log.Fatalln("не определить рабочий каталог")
 

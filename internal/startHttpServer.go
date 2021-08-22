@@ -3,6 +3,7 @@ package internal
 import (
 	"log"
 	"net/http"
+	"path"
 	"time"
 
 	"github.com/go-chi/chi"
@@ -13,12 +14,12 @@ var router = chi.NewRouter()
 
 func StartHttpServer(https bool) {
 	router.Use(redirectHttps)
-	router.Get("/start", start)
+	router.Get("/", sendImages)
 	router.Get("/avatar", sendImages)
 	router.Post("/avatar", sendImages)
 	router.Get("/img/{name}", func(w http.ResponseWriter, r *http.Request) {
 		val := chi.URLParam(r, "name")
-		http.ServeFile(w, r, "internal/img/"+val)
+		http.ServeFile(w, r, path.Join(imgDir, val))
 	})
 	router.Get("/favicon.ico", sendFavicon)
 	if https {

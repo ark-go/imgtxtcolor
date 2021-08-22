@@ -9,6 +9,7 @@ import (
 )
 
 func setFrame(canvas *ImgCanvas, pathFrame string) {
+
 	input, err := os.Open(pathFrame)
 	if err != nil {
 		log.Println("frame error:", err.Error())
@@ -33,6 +34,30 @@ func setFrame(canvas *ImgCanvas, pathFrame string) {
 	// Encode to `output`:
 	//png.Encode(output, dst)
 }
+
+// func loadDecodePNG(p *stParam, pathFrame string) (image.Image, error) {
+// 	if fileExists(pathFrame) {
+// 		input, err := os.Open(pathFrame)
+// 		if err != nil {
+// 			log.Println("frame error:", err.Error())
+// 			return nil, err
+// 		}
+// 		defer input.Close()
+// 		// Decode the image (from PNG to image.Image):
+// 		src, _ := png.Decode(input)
+// 		return src, nil
+// 	}else{
+// 		input, err :=  pathFrame)
+// 		if err != nil {
+// 			log.Println("frame error:", err.Error())
+// 			return nil, err
+// 		}
+// 		defer input.Close()
+// 		// Decode the image (from PNG to image.Image):
+// 		src, _ := png.Decode(input)
+// 		return src, nil
+// 	}
+// }
 
 /*
 draw.NearestNeighbor

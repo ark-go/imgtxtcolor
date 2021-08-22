@@ -11,6 +11,9 @@ import (
 
 func getRectInsideFree(p *stParam, pathFrame string) (img *image.RGBA, yTop, yBottom, xLeft, xRight int) {
 	src := getImageFromFile(pathFrame)
+	if src == nil {
+		return nil, 0, 0, 0, 0 // вернем nil, TODO: не где мне ошибку обрабатывать
+	}
 	//
 	img = image.NewRGBA(image.Rect(0, 0, p.opt.Width, p.opt.Height))
 	// Resize:
@@ -41,6 +44,19 @@ func getRectInsideFree(p *stParam, pathFrame string) (img *image.RGBA, yTop, yBo
 			xRight = xR
 		}
 	}
+	yBottom = img.Rect.Dy() - yBottom
+	xRight = img.Rect.Dx() - xRight
+	if (img.Rect.Dy() - yBottom - yTop) < 50 {
+		yTop = 0
+		yBottom = 0
+		//	img = nil
+	}
+	if (img.Rect.Dx() - xRight - xLeft) < 50 {
+		xLeft = 0
+		xRight = 0
+		//	img = nil
+	}
+	//log.Println("test", yTop, yBottom, xLeft, xRight)
 	return
 }
 
@@ -52,7 +68,11 @@ func getImageFromFile(pathFrame string) *image.RGBA {
 	}
 	defer input.Close()
 	// Decode the image (from PNG to image.Image):
-	src, _ := png.Decode(input)
+	src, err := png.Decode(input)
+	if err != nil {
+		log.Println("Ошибка PNG:", pathFrame, err.Error())
+		return nil
+	}
 	b := src.Bounds()
 	imgrgb := image.NewRGBA(image.Rect(0, 0, b.Dx(), b.Dy()))
 	//draw.Draw(imgrgb, imgrgb.Bounds(), src, b.Min, draw.Src)

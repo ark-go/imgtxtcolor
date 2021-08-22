@@ -2,7 +2,7 @@ package imgtxtcolor
 
 import (
 	"image"
-	"image/color"
+	//	"image/color"
 
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/font"
@@ -10,6 +10,8 @@ import (
 )
 
 func (p *stParam) addNextCanvas() {
+
+	//startTime := time.Now()
 	// создаем новый Canvas
 	p.canvas = &ImgCanvas{
 		parent:  p,
@@ -24,7 +26,7 @@ func (p *stParam) addNextCanvas() {
 			Hinting: font.HintingFull,
 		}),
 	}
-	canvasSetBackground(p, color.Transparent) // закрасим фон если надо добавим скругление углов
+	//canvasSetBackground(p, color.Transparent) // TODO: (здесь уже не нужно наверно) закрасим фон если надо добавим скругление углов
 	// инициализация данных Image
 	p.textHeightSumm = fixed.I(0) // сбросим курсор Y на 0 на первую строку сверху
 	//	p.setFontSize(p.opt.FontSize)
@@ -50,7 +52,7 @@ func (p *stParam) addNextCanvas() {
 	p.allCanvas = append(p.allCanvas, p.canvas)
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
 	p.isNewCanvas = false
-
+	//log.Printf("Time [%v]: %v\n", "Image создан за:", time.Since(startTime))
 }
 
 // --------------

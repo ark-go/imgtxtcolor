@@ -4,6 +4,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"runtime"
 	"strings"
 	"time"
 )
@@ -31,7 +32,7 @@ func startLogFile(logt logtype) (*os.File, error) {
 	var err error
 	switch logt {
 	case LogFileAndConsole, LogFile:
-		f, err = os.OpenFile("canvas.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+		f, err = os.OpenFile("imgtxtcolor.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 		if err != nil {
 			log.Fatalf("error opening file: %v", err) // Exit(1)
 		}
@@ -61,7 +62,7 @@ func CreateImageText(text string, opt *stStartOptions) ([]*ImgCanvas, error) {
 func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgCanvas, error) {
 	// maximize CPU usage for maximum performance
 	// runtime.GOMAXPROCS(runtime.NumCPU())
-
+	log.Println("Процессоров: ", runtime.NumCPU())
 	if f, err := startLogFile(logt); err != nil {
 		log.Panic("ошибка создания log-файла ")
 	} else if f != nil {
@@ -75,7 +76,9 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 		return nil, err
 	}
 	// Выделяем строки
+	//log.Printf("Time [%v]: %v\n", "Текст получен", time.Since(startTime))
 	lines := strings.Split(strings.ReplaceAll(text, "\r\n", "\n"), "\n") //\r\n у windows
+	//log.Printf("Time [%v]: %v\n", "Текст разобран", time.Since(startTime))
 	// Перебираем строки
 	for _, line := range lines { // строки
 
@@ -91,7 +94,8 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 	log.Printf("Time [%v]: %v\n", "Формат пройден", time.Since(startTime))
 	if param.opt.GifFileName != "" {
 		param.ToGif()
+		log.Printf("Time [%v]: %v\n", "Gif создан", time.Since(startTime))
 	}
-	log.Printf("Time [%v]: %v\n", "Gif создан", time.Since(startTime))
+
 	return param.allCanvas, err
 }

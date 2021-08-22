@@ -1,4 +1,5 @@
 .git/
 img/
-internal/img/*.png
-canvas.log
+internal/frame_old/
+imgtxtcolor.log
+bin/main/

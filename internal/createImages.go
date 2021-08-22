@@ -9,16 +9,18 @@ import (
 	"github.com/ark-go/imgtxtcolor/pkg/imgtxtcolor"
 )
 
-func createImages(text string) ([]*imgtxtcolor.ImgCanvas, error) {
-	dir, _ := ioutil.ReadDir("internal/img")
+func createImages(text string, gif bool) ([]*imgtxtcolor.ImgCanvas, error) {
+	dir, _ := ioutil.ReadDir(imgDir)
 	for _, d := range dir {
-		os.RemoveAll(path.Join([]string{"internal/img", d.Name()}...))
+		os.RemoveAll(path.Join(imgDir, d.Name()))
 	}
 	opt := imgtxtcolor.StartOption()
 	// opt.Width = sizeW
 	// opt.Height = sizeH
 	// opt.FontSize = fontSizeInt
-	opt.GifFileName = "internal/img/test.gif"
+	if gif {
+		opt.GifFileName = path.Join(imgDir, "test.gif")
+	}
 	opt.GifDelay = 100 * 1
 
 	//canvasArr, err := imgtxtcolor.CreateImageText(text, opt) //.CreateImageTextLog(text, opt, imgtxtcolor.LogFileAndConsole)

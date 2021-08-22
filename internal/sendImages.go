@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"text/template"
 )
@@ -17,26 +18,43 @@ type ViewData struct {
 	FontSize     int
 	FimagNames   []string
 	FimageBase64 []string
+	Readme       string
 }
 
-func getParamInt(r *http.Request, nameKey string, def int) int {
-	val, err := strconv.Atoi(r.FormValue(nameKey))
-	if err != nil {
-		val = def
-	}
-	return val
-}
+// func getParamInt(r *http.Request, nameKey string, def int) int {
+// 	val, err := strconv.Atoi(r.FormValue(nameKey))
+// 	if err != nil {
+// 		val = def
+// 	}
+// 	return val
+// }
+var readme []byte
 
 func sendImages(w http.ResponseWriter, r *http.Request) {
+
+	var gif bool
 	log.Println("Запрос..")
 	initials := r.FormValue("initials")
 	isSave := r.FormValue("save")
 	isLoad := r.FormValue("load")
+	action := r.FormValue("action")
+
+	if action == "Создавать Gif" {
+		gif = true
+	}
+	if action == "Тест данные" {
+		txtbyte, _ := embedFS.ReadFile("testembed.txt")
+		initials = string(txtbyte)
+	}
+	if action == "Справка" {
+		readme = getReadme()
+	}
 	// sizeH := getParamInt(r, "sizeH", 300)
 	// sizeW := getParamInt(r, "sizeW", 500)
 	// fontSizeInt := getParamInt(r, "fontSizeInt", 20)
+	fileText := filepath.Join(rootDir, "text.txt")
 	if isSave == "on" {
-		f, err := os.Create("internal/test.txt")
+		f, err := os.Create(fileText)
 		if err != nil {
 			log.Println("Ошибка записи test.txt")
 		}
@@ -48,30 +66,37 @@ func sendImages(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if isLoad == "on" {
-		f, err := os.Open("internal/test.txt")
+		f, err := os.Open(fileText)
 		if err != nil {
 			log.Println("Ошибка открытия test.txt")
 		}
 		defer f.Close()
 
-		txtbyte, err := ioutil.ReadFile("internal/test.txt")
-		initials = string(txtbyte)
+		txtbyte, err := ioutil.ReadFile(fileText)
+
 		if err != nil {
 			log.Println("Ошибка чтения test.txt")
+			log.Println("Читаем встроенный пример..")
+			txtbyte, _ = embedFS.ReadFile("testembed.txt")
+
 		}
+		initials = string(txtbyte)
+
 	}
 	fimgNames := []string{}
 	var img64 []string
-	os.MkdirAll("internal/img/", os.ModePerm)
-	avatar, err := createImages(initials)
+
+	os.MkdirAll(imgDir, os.ModePerm)
+	avatar, err := createImages(initials, gif)
 	if err != nil {
-		input, err := ioutil.ReadFile("internal/errormsg/error.png")
+		//input, err := ioutil.ReadFile("internal/errormsg/error.png")
+		input, err := embedFS.ReadFile("errormsg/error.png")
 		if err != nil {
 			log.Println(err)
 			return
 		}
 
-		err = ioutil.WriteFile("internal/img/error.png", input, 0644)
+		err = ioutil.WriteFile(filepath.Join(imgDir, "error.png"), input, 0644)
 		if err != nil {
 			log.Println("Error creating", err.Error())
 			return
@@ -94,7 +119,7 @@ func sendImages(w http.ResponseWriter, r *http.Request) {
 			// ---------  png files  ------------------
 			for i, imgCanvas := range avatar {
 				name := "img" + strconv.Itoa(i) + ".png"
-				f, err := os.Create("internal/img/" + name)
+				f, err := os.Create(filepath.Join(imgDir, name))
 				if err != nil {
 					panic(err)
 				}
@@ -112,7 +137,7 @@ func sendImages(w http.ResponseWriter, r *http.Request) {
 			// ---------  png files  ------------------
 			for i, imgCanvas := range avatar {
 				name := "img" + strconv.Itoa(i) + ".png"
-				f, err := os.Create("internal/img/" + name)
+				f, err := os.Create(filepath.Join(imgDir, name))
 				if err != nil {
 					panic(err)
 				}
@@ -129,8 +154,11 @@ func sendImages(w http.ResponseWriter, r *http.Request) {
 		// FontSize:     fontSizeInt,
 		FimagNames:   fimgNames,
 		FimageBase64: img64,
+		Readme:       string(readme),
 	}
-	tmpl, _ := template.ParseFiles("internal/test.html")
+
+	//tmpl, _ := template.ParseFiles("internal/test.html")
+	tmpl, _ := template.ParseFS(embedFS, "test.html")
 	tmpl.Execute(w, data)
 	//http.ServeFile(w, r, "internal/test.html")
 	log.Println("Слушаем порт 3005")

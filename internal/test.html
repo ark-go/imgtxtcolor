@@ -38,12 +38,17 @@
 {{ .Initials}}</textarea
         ><br /><br />
         <div style="text-align: center">
+          <input type="submit" name="action" value="Справка" />
+          <input type="submit" name="action" value="Тест данные" /><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          
           <input type="checkbox" name="save">Сохранить</input>
           <input type="checkbox" name="load">Прочитать</input>
-          <input type="submit" value="Отправить" />
+          <input type="submit" name="action" value="Отправить" />
+          <input type="submit" name="action" value="Создавать Gif" />
         </div>
         <br />
-        <img src="img/test.gif" alt="я джифка" />
+        <img src="img/test.gif" alt="тут могла быть gif-ка" />
+        <div>{{ .Readme}}</div>
       </form>
       <div
         style="

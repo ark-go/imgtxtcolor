@@ -12,7 +12,9 @@ buildzip:
 	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
 buildwin:
 	$(info +Компиляция windows)
-	GOOS=windows GOARCH=amd64 go build -o ./bin/main/wincanvas.exe cmd/app/main/main.go
+	GOTRACEBACK=none CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -o ./bin/main/imgtxtcolor.exe -tags static -ldflags "-s -w" cmd/main/main.go
+
+#	GOOS=windows GOARCH=amd64 go build -o ./bin/main/wincanvas.exe cmd/app/main/main.go
 
 # run: build
 # 	$(info +Запуск)
