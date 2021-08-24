@@ -3,7 +3,6 @@ package imgtxtcolor
 import (
 	"image"
 	"image/color"
-	"os"
 	"path/filepath"
 
 	"github.com/fogleman/gg"
@@ -192,12 +191,12 @@ var rootDir string
 
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
-	var err error
-	rootDir, err = filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Fatalln("не определить рабочий каталог")
+	//var err error
+	// rootDir, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	// if err != nil {
+	// 	log.Fatalln("не определить рабочий каталог")
 
-	}
+	// }
 
 	return &stStartOptions{
 		Width:           500,

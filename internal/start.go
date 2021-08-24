@@ -23,9 +23,15 @@ func init() {
 	rootDir, err = filepath.Abs(filepath.Dir(os.Args[0]))
 	imgDir = filepath.Join(rootDir, "img")
 	if err != nil {
-		log.Fatalln("не определить рабочий каталог")
-
+		rootDir = ""
+		log.Println("не определить рабочий каталог")
+		return
 	}
+	getExapleFrame()
+
+}
+
+func getExapleFrame() {
 	frameDir = filepath.Join(rootDir, "frame")
 	os.MkdirAll(frameDir, os.ModePerm)
 
@@ -41,7 +47,6 @@ func init() {
 		ioutil.WriteFile(filepath.Join(frameDir, file.Name()), data, 0644)
 	}
 	fmt.Println("Созданы примеры рамок")
-
 }
 
 // func start(w http.ResponseWriter, r *http.Request) {
