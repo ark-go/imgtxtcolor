@@ -1,6 +1,6 @@
-alignv:center bgColor:silver:#e0e0e0:#e0e0e0:#e0e0e0:#e0e0e0:silver lineSpacing:2 size:20 padding:0 round:20 height:512 width:612  align:left  delay:100 minHeight:100 minWidth:10 frame:frame1
+alignv:center bgColor:silver:#e0e0e0:#e0e0e0:#e0e0e0:#e0e0e0:silver lineSpacing:2 size:80 padding:0 round:20 height:512 width:612  align:left  delay:100 minHeight:100 minWidth:10 frame:frame1
 align:center color:green:red:green:V:0:50:100:50  date:now  time:now
-break:page color:blue alignv:center paddingbottom:0
+break:page color:blue alignv:center padding:20 size:20
 Лев Толстой родился  9 сентября 1828 года в усадьбе Ясная Поляна Тульской губернии. 
 color:yellow Он был четвертым ребенком в большой дворянской семье. Толстой рано осиротел. Мать умерла, когда ему не исполнилось еще двух лет, а в девять лет он лишился и отца. Опекуном пятерых детей Толстых стала тетя — Александра Остен-Сакен. 
 color:red Два старших ребенка переехали к тете в Москву, а младшие остались в Ясной Поляне. Именно с семейной усадьбой связаны самые важные и дорогие воспоминания раннего детства Льва Толстого.

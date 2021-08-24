@@ -5,14 +5,21 @@ SHELL := /bin/bash
 
 
 build:
-	$(info +Компиляция)
-	go build -o ./bin/main/canvas cmd/main/main.go
+	$(info +Компиляция Linux)
+	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
 buildzip:
 	$(info +Компиляция с жатием)
 	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
 buildwin:
 	$(info +Компиляция windows)
-	GOTRACEBACK=none CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -o ./bin/main/imgtxtcolor.exe -tags static -ldflags "-s -w" cmd/main/main.go
+	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -o ./bin/main/imgtxtcolor.exe -tags static -ldflags "-s -w" cmd/main/main.go
+
+buildandroid:
+	$(info +Компиляция windows)
+#	GOOS=android GOARCH=arm CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc go build -o ./bin/main/imgtxtcolor.apk -tags static -ldflags "-s -w" cmd/main/main.go
+	GOOS=android CGO_ENABLED=1  CC=g++ go build -o ./bin/main/imgtxtcolor.apk cmd/main/main.go
+#ANDROID_NDK_HOME=/home/arkadii/Android/Sdk/ndk/22.1.7171670/
+
 
 #	GOOS=windows GOARCH=amd64 go build -o ./bin/main/wincanvas.exe cmd/app/main/main.go
 
@@ -20,7 +27,7 @@ buildwin:
 # 	$(info +Запуск)
 # 	./bin/main/main -qwert -89  copy -r r234 -w ./e help8 help -help -mm  reverse  addPath -p -44.89 -p -788 -p 879 
 
-run: build
+run: build buildwin
 	$(info +Запуск)
 	./bin/main/canvas
 

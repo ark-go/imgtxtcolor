@@ -18,6 +18,7 @@ func getBase64(imgArr []*imgtxtcolor.ImgCanvas) []string {
 		go addBase64(tmp, i, canvas.Img, &wg)
 	}
 	wg.Wait()
+	
 	return tmp
 }
 

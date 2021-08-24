@@ -12,6 +12,15 @@ import (
 	"github.com/fogleman/gg"
 )
 
+// func MaxParallelism() int {
+// 	maxProcs := runtime.GOMAXPROCS(0)
+// 	numCPU := runtime.NumCPU()
+// 	if maxProcs < numCPU {
+// 		return maxProcs
+// 	}
+// 	return numCPU
+// }
+
 // func (p *stParam) textAlign() {
 
 // 	p.isNewCanvas = true // если будет новый текст создать в новом Image
@@ -25,6 +34,8 @@ func (p *stParam) formatAllCanvas() {
 		wg.Add(1)
 		go canvas.formatCanvas(&wg)
 	}
+	//log.Println("горутин формат:", runtime.NumGoroutine())
+	//log.Println("max parallel:", MaxParallelism())
 	wg.Wait()
 }
 
