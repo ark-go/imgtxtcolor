@@ -59,7 +59,16 @@ check:
 	fi;\
 	}
 #endif
-	
+
+testv: 
+	@{ \
+	set -e ;\
+	line=`git describe --tags | cut -d "-" -f 1`;\
+	echo $$line;\
+	line=`./Makefile.sh $$line`;\
+	echo $$line;\
+	} 
+
 gitsave:
 	@{ \
 	set -e ;\
