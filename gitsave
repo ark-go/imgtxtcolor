@@ -17,20 +17,39 @@ echo "$itog"
 
 gitSave(){
     git status --short;
-	line=`git describe --tags | cut -d "-" -f 1`;
-	echo Отправляем изменения на сервр, последний тэг: $line; 
-    line=$(versionInc "$line")
-	read -p "Введите комментарий [ n-отменить отправку ( по умолчанию: $line )]: " commitname;
-	line=${commitname:-$line};
-	if [[ $commitname == "n" ]];
+	local tag=`git describe --tags | cut -d "-" -f 1`;
+	echo Отправляем изменения на сервр, последний тэг: $tag; 
+    local newtag=$(versionInc "$tag")
+	read -p "Введите комментарий [ n-отменить отправку ( по умолчанию: $newtag )]: " commitname;
+	local comment=${commitname:-$newtag};
+	if [[ $comment == "n" ]];
 	then
 	echo вы отказались отправлять изменения;
 	exit 0;
 	else
     git add .
-	git commit -a -m $line ;
+	git commit -a -m $comment ;
 	git push origin;
 #	git push origin --tags ;
+	echo end;
+	fi;
+	createNewTag "$newtag"
+}
+
+createNewTag(){
+#set -e ;
+#	line=`git describe --tags | cut -d "-" -f 1`;
+#	echo $$line; 
+	local newtag=$1
+	echo Введите новый tag : $newtag [n - отмена];
+	read line;
+	if [[ $newtag == "n" ]]; 
+	then 
+	echo вы отказались;
+	exit 7;
+	else
+	git tag $newtag ;
+	git push origin --tags ;
 	echo end;
 	fi;
 }
