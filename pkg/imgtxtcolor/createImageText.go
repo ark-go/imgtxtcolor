@@ -81,14 +81,15 @@ func CreateImageTextLog(text string, opt *stStartOptions, logt logtype) ([]*ImgC
 	//log.Printf("Time [%v]: %v\n", "Текст разобран", time.Since(startTime))
 	// Перебираем строки
 	for _, line := range lines { // строки
-
 		if err := param.parseAndDrawLine(strings.TrimRight(line, " ")); err != nil {
 			log.Println(err.Error())
 			return nil, err
 		}
 	}
+
 	//param.textAlign() // последний Canvas
 	param.isNewCanvas = true
+
 	log.Printf("Time [%v]: %v\n", "Текст пройден", time.Since(startTime))
 	param.formatAllCanvas()
 	log.Printf("Time [%v]: %v\n", "Формат пройден", time.Since(startTime))

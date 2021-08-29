@@ -60,6 +60,8 @@ canvasArr, err := imgtxtcolor.CreateImageText(text, opt)
 принудительно разорвать текст, создать новый Image
 
 - **break:page**
+<details> 
+  <summary>Рамки</summary>
 
 ### Рамки
 
@@ -73,6 +75,7 @@ canvasArr, err := imgtxtcolor.CreateImageText(text, opt)
 - Рамки обязательно должны иметь прозрачный {0,0,0,0} цвет в центральной точке, для расчета отступов
 
   здесь есть картинки https://thypix.com/ru/fotoramki-s-prozrachnym-fonom-v-formate-png/
+  </details>
 
 ### ??
 

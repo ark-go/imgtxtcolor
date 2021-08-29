@@ -12,12 +12,14 @@ func (p *stParam) getHorizontalPos(str string) fixed.Int26_6 {
 		max := fixed.I(p.canvas.Img.Rect.Max.X) // всего
 		max -= fixed.I(p.canvas.padding.right)  // отнимаем справа
 		max -= fixed.I(p.canvas.padding.left)   // отнимаем слева
-		max -= p.drw.MeasureString(str)         // получаем свободное место
-		max /= 2                                //место пополам
-		max += fixed.I(p.canvas.padding.left)   // отодвигаем слева
+		//	max -= p.drw.MeasureString(str)         // получаем свободное место
+		max -= p.customMeasure(str)
+		max /= 2                              //место пополам
+		max += fixed.I(p.canvas.padding.left) // отодвигаем слева
 		return max
 	case AlignHorizontalRight: // вправо
-		return (fixed.I(p.canvas.Img.Rect.Dx()) - p.drw.MeasureString(str) - fixed.I(p.canvas.padding.right))
+		//	return (fixed.I(p.canvas.Img.Rect.Dx()) - p.drw.MeasureString(str) - fixed.I(p.canvas.padding.right))
+		return (fixed.I(p.canvas.Img.Rect.Dx()) - p.customMeasure(str) - fixed.I(p.canvas.padding.right))
 	default:
 		return fixed.I(p.canvas.padding.left) // влево
 	}

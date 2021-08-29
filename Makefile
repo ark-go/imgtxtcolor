@@ -1,18 +1,21 @@
 SHELL := /bin/bash
+arklibgo := ~/ProjectsGo/arkAlias.sh
+version = ~/ProjectsGo/arkAlias.sh getlastversion
 .PHONY: check
 
-.SILENT: build getlasttag buildzip
+.SILENT: build getlasttag buildzip buildwin
 
 
 build:
 	$(info +Компиляция Linux)
-	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
+	@echo $$($(version))
+	go build -ldflags "-s -w -X 'main.versionProg=$$($(version))'" -o ./bin/main/canvas cmd/main/main.go
 buildzip:
 	$(info +Компиляция с жатием)
 	go build -ldflags "-s -w" -o ./bin/main/canvas cmd/main/main.go
 buildwin:
 	$(info +Компиляция windows)
-	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -o ./bin/main/imgtxtcolor.exe -tags static -ldflags "-s -w" cmd/main/main.go
+	CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc GOOS=windows GOARCH=amd64 go build -o ./bin/main/imgtxtcolor.exe -tags static -ldflags "-s -w -X 'main.versionProg=$$($(version))'" cmd/main/main.go
 
 buildandroid:
 	$(info +Компиляция windows)
@@ -24,6 +27,7 @@ buildandroid:
 #	GOOS=windows GOARCH=amd64 go build -o ./bin/main/wincanvas.exe cmd/app/main/main.go
 
 # run: build
+
 # 	$(info +Запуск)
 # 	./bin/main/main -qwert -89  copy -r r234 -w ./e help8 help -help -mm  reverse  addPath -p -44.89 -p -788 -p 879 
 
@@ -34,7 +38,7 @@ run: build buildwin
 getlasttag:
 	git describe --tags
 
-gitsend: gitsave check
+gitsend: gitsave
 
 # make gittag tag=vx.x.x
 gittag: check
@@ -70,6 +74,9 @@ testv:
 	} 
 
 gitsave:
+	$(arklibgo) getlastversion
+
+gitsaveOld:
 	@{ \
 	set -e ;\
 	git status --short;\
@@ -101,6 +108,7 @@ help:
 	$(info gitsave - отправим на сервер)
 	$(info gittag - установим новый тэг)
 	$(info gitlasttag - показать последний тэг)
+	
 
 #	go doc -all ./internal
 #	go doc -all ./cmd/app/main

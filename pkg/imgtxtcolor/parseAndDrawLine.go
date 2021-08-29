@@ -4,6 +4,8 @@ import (
 	"errors"
 	"strings"
 	"time"
+
+	"golang.org/x/image/math/fixed"
 )
 
 func (p *stParam) parseAndDrawLine(text string) error {
@@ -17,6 +19,8 @@ func (p *stParam) parseAndDrawLine(text string) error {
 	isCmd := false
 	isBreak := false
 	wordCount := 0
+	var textWidh fixed.Int26_6
+	//var textWidh2 fixed.Int26_6
 	for word := range c {
 		if word == "time:now" {
 			t := time.Now()
@@ -57,11 +61,15 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		if p.isNewCanvas {
 			p.addNextCanvas()
 		}
+
 		wordCount++
 		sbTmp.WriteString(word) // temp - только для измерения длинны
 		// определим куда переместится курсор
-		textWidh := p.drw.MeasureString(sbTmp.String())
-
+		//textWidh := p.drw.MeasureString(sbTmp.String()) // было так
+		// если MeasureString измерять длинные слова то получается очень долго
+		// поэтому будем считать сразу послову, что будет в 5 раз быстрее
+		//textWidh += p.drw.MeasureString(word)
+		textWidh += p.customMeasure(word)
 		// если вылезает новая временная строка, то пишем предыдущую
 		if textWidh.Ceil() > (p.canvas.Img.Rect.Dx() - p.canvas.padding.lenW()) {
 			if wordCount == 1 { // TODO а если захотим авто ширину?
@@ -72,8 +80,9 @@ func (p *stParam) parseAndDrawLine(text string) error {
 				for len(run) > 0 { // будем печатать все слово и нарезать его
 					i := len(run)
 					for ; i > 0; i-- { // поиск наименьшего куска, отрезаем с конца
-						rstr := run[:i]                            // отрезаем конец
-						textW := p.drw.MeasureString(string(rstr)) // замеряем остаток
+						rstr := run[:i] // отрезаем конец
+						//textW := p.drw.MeasureString(string(rstr)) // замеряем остаток
+						textW := p.customMeasure(string(rstr)) // замеряем остаток
 						if textW.Ceil() > (p.canvas.Img.Rect.Dx() - p.canvas.padding.lenW()) {
 							continue // еще не влезает
 						}
@@ -103,7 +112,9 @@ func (p *stParam) parseAndDrawLine(text string) error {
 			sbTmp.Reset()
 			word = strings.TrimLeft(word, " ") // если переносится пробел впереди - удалим его
 			sbTmp.WriteString(word)            // слово которое не влезло вставляем вначало для TMP
-			sb.WriteString(word)               // ну и начинаем новый набор с пропущеного слова
+			//textWidh = p.drw.MeasureString(sbTmp.String()) // необходимо сразу посчитать ширину
+			textWidh = p.customMeasure(sbTmp.String()) // необходимо сразу посчитать ширину
+			sb.WriteString(word)                       // ну и начинаем новый набор с пропущеного слова
 			continue
 		}
 
@@ -115,7 +126,7 @@ func (p *stParam) parseAndDrawLine(text string) error {
 		p.isNewCanvas = true
 		isBreak = false
 	}
-
+	//_ = errors.New("d")
 	sbStr := strings.TrimRight(sb.String(), " ")
 
 	if Ok := p.drawLine(sbStr); !Ok {
@@ -124,3 +135,36 @@ func (p *stParam) parseAndDrawLine(text string) error {
 
 	return nil
 }
+
+// измеряет ширину строки, работает быстрее стандартной  drw.MeasureString
+func (p *stParam) customMeasure(str string) fixed.Int26_6 {
+	//	start := time.Now()
+	var textWidh fixed.Int26_6
+	for _, v := range str {
+		textWidh += p.drw.MeasureString(string(v))
+	}
+	//	log.Println("Time For : ", textWidh, time.Since(start))
+	//	start = time.Now()
+	//	textWidh = p.drw.MeasureString(string(str))
+	//	log.Println("Time no for :", textWidh, time.Since(start))
+	return textWidh
+}
+
+// func (p *stParam) customMeasure2(str string) fixed.Int26_6 {
+// 	var textWidh fixed.Int26_6
+// 	var mu sync.Mutex
+// 	var wg sync.WaitGroup
+
+// 	for _, v := range str {
+// 		wg.Add(1)
+// 		go func(wg *sync.WaitGroup, mu *sync.Mutex, v rune) {
+// 			defer wg.Done()
+// 			//	res := p.drw.MeasureString(string(v))
+// 			mu.Lock()
+// 			textWidh += p.drw.MeasureString(string(v))
+// 			mu.Unlock()
+// 		}(&wg, &mu, v)
+// 	}
+// 	wg.Wait()
+// 	return textWidh
+// }

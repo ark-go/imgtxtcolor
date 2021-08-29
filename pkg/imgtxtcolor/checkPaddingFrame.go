@@ -9,7 +9,6 @@ func checkPaddingFrame(p *stParam) {
 		p.opt.FrameFilePath = "" // ошибка файла, сбросим путь т.к. он является флагом в дальнейшем
 		return
 	}
-	///   if (top+bottom) > p.canvas.Img.Rect.Dy()  || (left + right) > p.canvas.im
 
 	p.opt.Padding.top = top
 	p.opt.Padding.bottom = bottom

@@ -11,13 +11,16 @@ import (
 
 func (p *stParam) addNextCanvas() {
 
-	//startTime := time.Now()
+	//	if a < 1 {
 	// создаем новый Canvas
 	p.canvas = &ImgCanvas{
 		parent:  p,
 		padding: &stPadding{},
 	}
+	//p.canvas.Img = image.NewRGBA(image.Rect(0, 0, 5, 5))
+
 	p.canvas.Img = image.NewRGBA(image.Rect(0, 0, p.opt.Width, p.opt.Height)) // новая Canvas image.RGBA
+
 	p.drw = &font.Drawer{
 		Dst: p.canvas.Img, // подключим ее
 		Src: &image.Uniform{C: p.opt.FontColor[0]},
@@ -26,6 +29,8 @@ func (p *stParam) addNextCanvas() {
 			Hinting: font.HintingFull,
 		}),
 	}
+	//	}
+	//	a = a + 1
 	//canvasSetBackground(p, color.Transparent) // TODO: (здесь уже не нужно наверно) закрасим фон если надо добавим скругление углов
 	// инициализация данных Image
 	p.textHeightSumm = fixed.I(0) // сбросим курсор Y на 0 на первую строку сверху
@@ -53,6 +58,7 @@ func (p *stParam) addNextCanvas() {
 	// сбрасываем флаг, нам больше не требуется новый Canvas, его только что чоздали
 	p.isNewCanvas = false
 	//log.Printf("Time [%v]: %v\n", "Image создан за:", time.Since(startTime))
+
 }
 
 // --------------

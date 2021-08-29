@@ -1,11 +1,6 @@
 package imgtxtcolor
 
 import (
-	"image"
-	"image/color"
-	"path/filepath"
-
-	"github.com/fogleman/gg"
 	"github.com/golang/freetype"
 	"github.com/golang/freetype/truetype"
 	"golang.org/x/image/colornames"
@@ -13,6 +8,9 @@ import (
 	"golang.org/x/image/font/gofont/gobold"
 	"golang.org/x/image/font/gofont/goregular"
 	"golang.org/x/image/math/fixed"
+	"image"
+	"image/color"
+	"path/filepath"
 )
 
 type stBorder struct {
@@ -191,7 +189,8 @@ var rootDir string
 
 // Начальные установки по умолчанию
 func StartOption() *stStartOptions {
-	//var err error
+	// wasm не понимает os
+	// var err error
 	// rootDir, err = filepath.Abs(filepath.Dir(os.Args[0]))
 	// if err != nil {
 	// 	log.Fatalln("не определить рабочий каталог")
@@ -250,12 +249,12 @@ func initCanvas(startOption *stStartOptions) (*stParam, error) {
 	return &param, err
 }
 
-func canvasSetBackground(param *stParam, col color.Color) {
-	ctx := gg.NewContextForRGBA(param.canvas.Img)
-	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.opt.Round))
-	ctx.SetColor(col)
-	ctx.Fill()
-}
+// func canvasSetBackground(param *stParam, col color.Color) {
+// 	ctx := gg.NewContextForRGBA(param.canvas.Img)
+// 	ctx.DrawRoundedRectangle(0, 0, float64(param.opt.Width), float64(param.opt.Height), float64(param.opt.Round))
+// 	ctx.SetColor(col)
+// 	ctx.Fill()
+// }
 
 // Установка Font (goregular.TTF)
 // 	font установить в nil  // TODO сделать возможность выбора шрифта

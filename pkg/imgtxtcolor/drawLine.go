@@ -31,7 +31,8 @@ func (p *stParam) drawLine(text string) bool {
 			return true
 		}
 	}
-	p.canvas.setMaxX(p.drw.MeasureString(text))
+	p.canvas.setMaxX(p.customMeasure(text))
+	//p.canvas.setMaxX(p.drw.MeasureString(text))
 	p.canvas.setmaxY(p.textHeightSumm) // TODO Нужно прибавлять Descent  + p.drw.Face.Metrics().Descent
 	p.drw.DrawString(text)
 	return true

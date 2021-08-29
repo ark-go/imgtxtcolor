@@ -20,11 +20,7 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 
 		siz, err := strconv.Atoi(str)
 		if err != nil || siz < 0 {
-			//	if !checkPaddingFrame(p, str) {
 			return false, false
-			// } else {
-			// 	return true, true
-			// }
 		}
 		if p.opt.FrameFilePath == "" {
 			switch strings.ToLower(cmd) {
@@ -134,7 +130,7 @@ func (p *stParam) commandCheck(str, cmd string) (_cmd, _break bool) {
 		if siz, err := strconv.Atoi(str); err == nil {
 			p.opt.Width = siz
 			p.opt.AutoWidth = false
-			checkPaddingFrame(p)
+			checkPaddingFrame(p) // если были рамки, то надо пересчитать
 			return true, true
 		}
 	case "height":
